@@ -5,11 +5,10 @@ import { Heart } from 'lucide-react';
 
 interface LikeBarProps {
   onLike: () => void;
-  onDislike: () => void;
   className?: string;
 }
 
-export default function LikeBar({ onLike, onDislike, className = '' }: LikeBarProps) {
+export default function LikeBar({ onLike, className = '' }: LikeBarProps) {
   return (
     <div className={`flex items-center justify-center gap-4 p-4 rounded-lg ${className}`}>
       <button

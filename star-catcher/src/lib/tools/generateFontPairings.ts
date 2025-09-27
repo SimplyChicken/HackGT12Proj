@@ -22,6 +22,9 @@ type GFontItem = {
 
 type GFontsResponse = { items: GFontItem[] };
 
+let _gfontsCache: { data: GFontsResponse; ts: number } | null = null;
+const CACHE_TTL = 1000 * 60 * 60; // 1 hour
+
 export const generateFontPairings = async (
     options: GenerateFontPairingsOptions = {}
 ): Promise<z.infer<typeof FontPairingSchema>> => {
@@ -30,12 +33,20 @@ export const generateFontPairings = async (
     const apiKey = process.env.GOOGLE_FONTS_API_KEY;
     if (!apiKey) throw new Error("Missing GOOGLE_FONTS_API_KEY in environment.");
 
-    // Fetch font list
-    const res = await fetch(
-        `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`
-    );
-    if (!res.ok) throw new Error(`Google Fonts API failed: ${res.status}`);
-    const data = (await res.json()) as GFontsResponse;
+    const now = Date.now();
+
+    if (_gfontsCache && now - _gfontsCache.ts < CACHE_TTL) {
+        console.log("using cached Google Fonts list");
+    } else {
+        const res = await fetch(
+            `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`
+        );
+        if (!res.ok) throw new Error(`Google Fonts API failed: ${res.status}`);
+        const data = (await res.json()) as GFontsResponse;
+        _gfontsCache = { data, ts: now };
+    }
+
+    const data = _gfontsCache.data;
 
     const EXCLUDED_WORDS = ["guides", "underline", "charted", "rubik", "bitcount"];
 

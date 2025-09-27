@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="6408c112-39b5-4a6b-acb2-426bd74418f4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/api/design/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/api/design/route.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/LikeBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/LikeBar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/TypographyPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/TypographyPreview.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/lib/tools/generateFontPairings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/lib/tools/generateFontPairings.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
