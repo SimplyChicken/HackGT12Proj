@@ -1,36 +1,149 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Star Catcher - AI Design Generator
+
+A Next.js 14 application powered by a Mastra AI Agent that generates beautiful web design artifacts including font pairings, color palettes, and React components.
+
+## Features
+
+### 🎨 Design Generation
+- **Font Pairings**: Generate harmonious Google Font combinations with usage guidance
+- **Color Palettes**: Create accessible color schemes with WCAG AA contrast compliance
+- **React Components**: Generate production-ready components (navbars, heroes, cards, buttons, footers)
+
+### 🧠 AI-Powered Memory System
+- **Personalized Recommendations**: The AI learns from your likes and dislikes
+- **Memory Storage**: Save and manage your favorite designs in localStorage
+- **Smart Biasing**: Future generations are influenced by your preferences
+
+### 🎯 Modern Tech Stack
+- **Next.js 14** with App Router
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **Zod** for data validation
+- **Mastra AI** for intelligent design generation
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
 
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd star-catcher
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## Usage
 
-To learn more about Next.js, take a look at the following resources:
+### Generating Designs
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Fonts Tab**: Click "Generate Font Pairing" to create harmonious typography combinations
+2. **Colors Tab**: Click "Generate Color Palette" to create accessible color schemes  
+3. **Components Tab**: Click "Generate Component" to create React components
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Managing Memories
 
-## Deploy on Vercel
+1. **Like/Dislike**: Use the 👍/👎 buttons to provide feedback on generated designs
+2. **View Memories**: Click the "Memories" button to see all saved designs
+3. **Apply Memories**: Click "Apply" on any saved memory to reuse previous designs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Memory System
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application learns from your preferences:
+- **Liked items** influence future generations positively
+- **Disliked items** are avoided in future recommendations
+- **All feedback** is stored locally in your browser
+
+## Architecture
+
+### Core Components
+
+- **DesignAgent**: Central AI agent that coordinates design generation
+- **Tools**: Specialized functions for fonts, colors, and components
+- **Memory System**: Manages user preferences and feedback
+- **API Routes**: Handle generation requests and responses
+
+### File Structure
+
+```
+src/
+├── app/
+│   ├── api/design/route.ts    # API endpoint for design generation
+│   ├── layout.tsx             # Root layout
+│   └── page.tsx               # Main application page
+├── components/ui/
+│   ├── GeneratorPanel.tsx     # Main interface with tabs
+│   ├── TypographyPreview.tsx  # Font pairing preview
+│   ├── PalettePreview.tsx     # Color palette preview
+│   ├── PreviewCanvas.tsx      # Component preview
+│   ├── LikeBar.tsx            # Feedback interface
+│   └── MemoriesDrawer.tsx     # Memory management
+├── lib/
+│   ├── mastra/agent.ts        # DesignAgent implementation
+│   ├── tools/                 # Generation tools
+│   ├── schemas/               # Zod validation schemas
+│   └── memory.ts              # Memory system
+```
+
+## API Reference
+
+### POST /api/design
+
+Generate design artifacts.
+
+**Request Body:**
+```json
+{
+  "type": "font" | "color" | "component",
+  "options": {
+    "style": "modern",
+    "purpose": "website"
+  },
+  "memories": []
+}
+```
+
+**Response:**
+```json
+{
+  "type": "font",
+  "data": {
+    "primary": { "name": "Inter", "googleFontUrl": "...", ... },
+    "secondary": { "name": "Roboto", "googleFontUrl": "...", ... },
+    "rationale": "..."
+  }
+}
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- Powered by [Mastra AI](https://mastra.ai/)
+- Validated with [Zod](https://zod.dev/)
