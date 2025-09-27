@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { FontPairing, ColorPalette, Component, MemoryItem } from '@/lib/schemas';
 import { memorySystem } from '@/lib/memory';
 import TypographyPreview from './TypographyPreview';
-import PalettePreview from './PalettePreview';
+// import PalettePreview from './PalettePreview';
 import PreviewCanvas from './PreviewCanvas';
 import LikeBar from './LikeBar';
 import { Palette, Type, Component as ComponentIcon, Unlock, Lock} from 'lucide-react';
@@ -13,9 +13,19 @@ type TabType = 'fonts' | 'colors' | 'components';
 
 interface GeneratorPanelProps {
   className?: string;
+  memories?: MemoryItem[];
+  setMemories?: (memories: MemoryItem[]) => void;
+  isMemoriesOpen?: boolean;
+  setIsMemoriesOpen?: (open: boolean) => void;
 }
 
-export default function GeneratorPanel({ className = '' }: GeneratorPanelProps) {
+export default function GeneratorPanel({ 
+  className = '',
+  memories = [],
+  setMemories,
+  isMemoriesOpen = false,
+  setIsMemoriesOpen
+}: GeneratorPanelProps) {
   const [activeTab, setActiveTab] = useState<TabType>('fonts');
   const [currentFont, setCurrentFont] = useState<FontPairing | null>(null);
   const [currentPalette, setCurrentPalette] = useState<ColorPalette | null>(null);
@@ -220,7 +230,10 @@ export default function GeneratorPanel({ className = '' }: GeneratorPanelProps) 
       case 'colors':
         return (
           <div className="space-y-6">
-            <PalettePreview palette={currentPalette} />
+            {/* <PalettePreview palette={currentPalette} /> */}
+            <div className="p-8 text-center text-gray-500">
+              Color palette preview coming soon...
+            </div>
             {currentPalette && (
               <LikeBar
                 onLike={() => handleLike('colors')}

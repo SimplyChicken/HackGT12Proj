@@ -11,7 +11,7 @@ export default function Navbar() {
           <button onClick={() => signOut()}>Logout</button>
         </>
       ) : (
-        <button onClick={() => signIn()}>Login</button>
+        <button onClick={() => signIn('github')}>Login with GitHub</button>
       )}
     </div>
   );

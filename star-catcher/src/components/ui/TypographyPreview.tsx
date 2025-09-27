@@ -29,8 +29,8 @@ export default function TypographyPreview({ fontPairing }: TypographyPreviewProp
 
         // Wait for fonts to load
         await Promise.all([
-          document.fonts.load(`${fontPairing.primary.weight} ${fontPairing.primary.name}`),
-          document.fonts.load(`${fontPairing.secondary.weight} ${fontPairing.secondary.name}`),
+          document.fonts.load(`${fontPairing.primary.weight}px ${fontPairing.primary.name}`),
+          document.fonts.load(`${fontPairing.secondary.weight}px ${fontPairing.secondary.name}`),
         ]);
 
         setFontsLoaded(true);
