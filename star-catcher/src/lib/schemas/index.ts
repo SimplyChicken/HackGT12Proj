@@ -82,6 +82,9 @@ export const ComponentSchema = z.object({
   code: z.string(),
   description: z.string(),
   props: z.record(z.any()).optional(),
+  style: z.string().optional(),
+  features: z.array(z.string()).optional(),
+  preferences: z.record(z.any()).optional(),
 });
 
 export type Component = z.infer<typeof ComponentSchema>;
