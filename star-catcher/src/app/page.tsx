@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import GeneratorPanel from '@/components/ui/GeneratorPanel';
 import MemoriesDrawer from '@/components/ui/MemoriesDrawer';
 import { MemoryItem } from '@/lib/schemas';
-import { Menu, Sparkles } from 'lucide-react';
+import Header from '@/components/ui/Header';
 
 export default function Home() {
   const [isMemoriesOpen, setIsMemoriesOpen] = useState(false);
@@ -19,36 +18,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold text-gray-900">Star Catcher</h1>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <Link href="/accounts">
-                <button
-                  type="button"
-                  className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-                >
-                  Sign in
-                </button>
-              </Link>
-              <button
-                onClick={() => setIsMemoriesOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
-              >
-                <Menu className="w-4 h-4" />
-                Memories
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header onOpenMemories={() => setIsMemoriesOpen(true)} />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -64,13 +34,6 @@ export default function Home() {
 
         <GeneratorPanel className="max-w-4xl mx-auto" />
       </main>
-
-      {/* Memories Drawer */}
-      <MemoriesDrawer
-        isOpen={isMemoriesOpen}
-        onClose={() => setIsMemoriesOpen(false)}
-        onApplyMemory={handleApplyMemory}
-      />
     </div>
   );
 }
