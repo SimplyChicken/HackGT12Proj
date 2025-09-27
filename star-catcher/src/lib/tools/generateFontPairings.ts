@@ -35,13 +35,13 @@ export const generateFontPairings = async (
     const keepFont = (f: GFontItem) => {
         if (!f.subsets?.includes("latin")) return false;                                 // 2
         const has400 = f.variants?.some(v => v === "regular" || v === "400");            // 3
-        if (!has400) return false;
-        const weights = new Set(
-            f.variants
-                .map(v => (v === "regular" ? "400" : v.replace("italic","")))
-                .filter(v => /^\d+$/.test(v))
-        );
-        if (weights.size < 2) return false;
+        // if (!has400) return false;
+        // const weights = new Set(
+        //     f.variants
+        //         .map(v => (v === "regular" ? "400" : v.replace("italic","")))
+        //         .filter(v => /^\d+$/.test(v))
+        // );
+        // if (weights.size < 2) return false;
         return true;
     };
 
