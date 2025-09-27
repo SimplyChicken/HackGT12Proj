@@ -165,6 +165,7 @@ export default function GeneratorPanel({
                               </button>
                               </div>
 
+
                               <div className="flex flex-wrap gap-4">
                                   {ALL_CATEGORIES.map((cat) => (
                                       <label
@@ -176,6 +177,7 @@ export default function GeneratorPanel({
                                               className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
                                               checked={primaryCategories.includes(cat)}
                                               onChange={() => setPrimaryCategories((c) => toggleIn(c, cat))}
+                                              disabled={lockPrimary}
                                           />
                                           <span className="capitalize">{cat.replace('-', ' ')}</span>
                                       </label>
@@ -208,6 +210,7 @@ export default function GeneratorPanel({
                                               className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
                                               checked={secondaryCategories.includes(cat)}
                                               onChange={() => setSecondaryCategories((c) => toggleIn(c, cat))}
+                                              disabled={lockSecondary}
                                           />
                                           <span className="capitalize">{cat.replace('-', ' ')}</span>
                                       </label>
@@ -298,7 +301,18 @@ export default function GeneratorPanel({
             onClick={() => generateDesign(
                 activeTab,
                 activeTab === 'fonts'
-                    ? { primaryCategories, secondaryCategories }
+                    ? { primaryCategories, secondaryCategories,
+                        locked: {
+                            ...(lockPrimary && currentFont ? {
+                                primaryName: currentFont.primary.name,
+                                primaryWeight: currentFont.primary.weight,
+                            } : {}),
+                            ...(lockSecondary && currentFont ? {
+                                secondaryName: currentFont.secondary.name,
+                                secondaryWeight: currentFont.secondary.weight,
+                            } : {}),
+                        },
+                    }
                     : {}
             )}
             disabled={isLoading ||
