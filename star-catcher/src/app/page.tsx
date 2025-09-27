@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import GeneratorPanel from '@/components/ui/GeneratorPanel';
 import MemoriesDrawer from '@/components/ui/MemoriesDrawer';
 import { MemoryItem } from '@/lib/schemas';
@@ -28,13 +29,23 @@ export default function Home() {
               <h1 className="text-xl font-bold text-gray-900">Star Catcher</h1>
             </div>
             
-            <button
-              onClick={() => setIsMemoriesOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
-            >
-              <Menu className="w-4 h-4" />
-              Memories
-            </button>
+            <div className="flex items-center gap-4">
+              <Link href="/accounts">
+                <button
+                  type="button"
+                  className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                >
+                  Sign in
+                </button>
+              </Link>
+              <button
+                onClick={() => setIsMemoriesOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+              >
+                <Menu className="w-4 h-4" />
+                Memories
+              </button>
+            </div>
           </div>
         </div>
       </header>
