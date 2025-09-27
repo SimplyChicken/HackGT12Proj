@@ -15,8 +15,7 @@ export const FontPairingSchema = z.object({
     weight: z.string(),
     style: z.string(),
     usage: z.string(),
-  }),
-  rationale: z.string(),
+  })
 });
 
 export type FontPairing = z.infer<typeof FontPairingSchema>;
