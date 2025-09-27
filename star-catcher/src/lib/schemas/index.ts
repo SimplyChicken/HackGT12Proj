@@ -78,11 +78,13 @@ export type ColorPalette = z.infer<typeof ColorPaletteSchema>;
 
 // Component Schema
 export const ComponentSchema = z.object({
-  type: z.enum(['navbar', 'hero', 'card', 'button', 'footer']),
+  type: z.enum(['navbar', 'hero', 'card', 'button', 'footer', 'modal', 'form', 'badge', 'alert', 'breadcrumb', 'pagination', 'tabs', 'accordion', 'dropdown', 'sidebar']),
   name: z.string(),
   code: z.string(),
   description: z.string(),
   props: z.record(z.any()).optional(),
+  style: z.string().optional(),
+  features: z.array(z.string()).optional(),
 });
 
 export type Component = z.infer<typeof ComponentSchema>;

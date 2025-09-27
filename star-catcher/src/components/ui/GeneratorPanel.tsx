@@ -20,6 +20,7 @@ export default function GeneratorPanel({ className = '' }: GeneratorPanelProps) 
   const [currentFont, setCurrentFont] = useState<FontPairing | null>(null);
   const [currentPalette, setCurrentPalette] = useState<ColorPalette | null>(null);
   const [currentComponent, setCurrentComponent] = useState<Component | null>(null);
+  const [componentType, setComponentType] = useState<string>('button');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -194,10 +195,41 @@ export default function GeneratorPanel({ className = '' }: GeneratorPanelProps) 
           </div>
         )}
 
+        {/* Component Type Selector - Only show for components tab */}
+        {activeTab === 'components' && (
+          <div className="mb-4">
+            <label htmlFor="componentType" className="block text-sm font-medium text-gray-700 mb-2">
+              Component Type
+            </label>
+            <select
+              id="componentType"
+              value={componentType}
+              onChange={(e) => setComponentType(e.target.value as any)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="button">Button</option>
+              <option value="navbar">Navbar</option>
+              <option value="hero">Hero Section</option>
+              <option value="footer">Footer</option>
+              <option value="card">Card</option>
+              <option value="modal">Modal</option>
+              <option value="form">Form</option>
+              <option value="badge">Badge</option>
+              <option value="alert">Alert</option>
+              <option value="breadcrumb">Breadcrumb</option>
+              <option value="pagination">Pagination</option>
+              <option value="tabs">Tabs</option>
+              <option value="accordion">Accordion</option>
+              <option value="dropdown">Dropdown</option>
+              <option value="sidebar">Sidebar</option>
+            </select>
+          </div>
+        )}
+
         {/* Generate Button */}
         <div className="mb-6">
           <button
-            onClick={() => generateDesign(activeTab)}
+            onClick={() => generateDesign(activeTab, activeTab === 'components' ? { componentType } : {})}
             disabled={isLoading}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-medium py-3 px-4 rounded-md transition-colors flex items-center justify-center gap-2"
           >
@@ -207,7 +239,7 @@ export default function GeneratorPanel({ className = '' }: GeneratorPanelProps) 
                 Generating...
               </>
             ) : (
-              `Generate ${activeTab === 'fonts' ? 'Font Pairing' : activeTab === 'colors' ? 'Color Palette' : 'Component'}`
+              `Generate ${activeTab === 'fonts' ? 'Font Pairing' : activeTab === 'colors' ? 'Color Palette' : `${componentType} Component`}`
             )}
           </button>
         </div>

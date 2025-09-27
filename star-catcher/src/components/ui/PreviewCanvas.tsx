@@ -45,13 +45,23 @@ export default function PreviewCanvas({ component }: PreviewCanvasProps) {
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold mb-2">{component.name}</h3>
         <p className="text-sm text-gray-600 mb-3">{component.description}</p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
             {component.type}
           </span>
+          {component.style && (
+            <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
+              {component.style} style
+            </span>
+          )}
           {component.props && (
             <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
               Configurable
+            </span>
+          )}
+          {component.features && (
+            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+              {component.features.length} features
             </span>
           )}
         </div>
@@ -131,10 +141,16 @@ export default function PreviewCanvas({ component }: PreviewCanvasProps) {
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <h4 className="font-medium text-gray-900 mb-2">Features</h4>
           <ul className="text-sm text-gray-600 space-y-1">
-            <li>✓ Responsive design</li>
-            <li>✓ Tailwind CSS styling</li>
-            <li>✓ Accessibility optimized</li>
-            <li>✓ Production ready</li>
+            {component.features ? component.features.map((feature, index) => (
+              <li key={index}>✓ {feature}</li>
+            )) : (
+              <>
+                <li>✓ Responsive design</li>
+                <li>✓ Tailwind CSS styling</li>
+                <li>✓ Accessibility optimized</li>
+                <li>✓ Production ready</li>
+              </>
+            )}
           </ul>
         </div>
         
@@ -145,6 +161,8 @@ export default function PreviewCanvas({ component }: PreviewCanvasProps) {
             <li>✓ Proper contrast ratios</li>
             <li>✓ Keyboard navigation</li>
             <li>✓ Screen reader friendly</li>
+            <li>✓ TypeScript interfaces</li>
+            <li>✓ Modern React patterns</li>
           </ul>
         </div>
       </div>
