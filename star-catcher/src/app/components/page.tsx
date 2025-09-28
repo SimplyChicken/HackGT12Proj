@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Sparkles, Layout, Navigation, Zap, CreditCard, Square, ArrowRight } from 'lucide-react';
 import ClientOnlyWrapper from '@/components/ClientOnlyWrapper';
+import Header from '@/components/ui/Header';
 
 // Component type definitions
 interface ComponentTemplate {
@@ -86,28 +87,16 @@ const componentTemplates: ComponentTemplate[] = [
 
 function ComponentGeneratorContent() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold text-gray-900">Component Generator</h1>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-eggshell">
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-space-cadet mb-4 font-poly">
             AI-Powered Component Generator
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-gray max-w-2xl mx-auto font-outfit">
             Choose from various component types and customize them with natural language instructions. 
             Watch as our AI transforms your components based on your requirements.
           </p>
@@ -115,21 +104,23 @@ function ComponentGeneratorContent() {
 
         {/* Component Type Selection */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Choose Component Type</h3>
+          <h3 className="text-lg font-semibold text-space-cadet mb-6 font-poly">Choose Component Type</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {componentTemplates.map((template) => (
               <Link
                 key={template.type}
                 href={template.href}
-                className="group bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-blue-300 transition-all"
+                className="group bg-white rounded-lg shadow-sm border border-slate-gray/20 p-6 hover:shadow-md hover:border-space-cadet/30 transition-all"
               >
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors mb-4">
-                    {template.icon}
+                  <div className="w-12 h-12 bg-space-cadet rounded-lg flex items-center justify-center group-hover:bg-space-cadet/90 transition-colors mb-4">
+                    <div className="text-white">
+                      {template.icon}
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{template.name}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{template.description}</p>
-                  <div className="flex items-center text-blue-600 text-sm font-medium group-hover:text-blue-700">
+                  <h3 className="text-lg font-semibold text-space-cadet mb-2 font-poly">{template.name}</h3>
+                  <p className="text-sm text-slate-gray mb-4 font-outfit">{template.description}</p>
+                  <div className="flex items-center text-space-cadet text-sm font-medium group-hover:text-space-cadet/80 font-outfit">
                     <span>Customize</span>
                     <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -140,29 +131,29 @@ function ComponentGeneratorContent() {
         </div>
 
         {/* Features Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">Features</h3>
+        <div className="bg-white rounded-lg shadow-sm border border-slate-gray/20 p-8">
+          <h3 className="text-xl font-semibold text-space-cadet mb-6 text-center font-poly">Features</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-space-cadet rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <h4 className="text-lg font-medium text-gray-900 mb-2">AI-Powered</h4>
-              <p className="text-gray-600">Natural language customization using advanced AI models</p>
+              <h4 className="text-lg font-medium text-space-cadet mb-2 font-poly">AI-Powered</h4>
+              <p className="text-slate-gray font-outfit">Natural language customization using advanced AI models</p>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Layout className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-space-cadet rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Layout className="w-6 h-6 text-white" />
               </div>
-              <h4 className="text-lg font-medium text-gray-900 mb-2">Live Preview</h4>
-              <p className="text-gray-600">See your changes in real-time with interactive previews</p>
+              <h4 className="text-lg font-medium text-space-cadet mb-2 font-poly">Live Preview</h4>
+              <p className="text-slate-gray font-outfit">See your changes in real-time with interactive previews</p>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <ArrowRight className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-space-cadet rounded-lg flex items-center justify-center mx-auto mb-4">
+                <ArrowRight className="w-6 h-6 text-white" />
               </div>
-              <h4 className="text-lg font-medium text-gray-900 mb-2">Export Ready</h4>
-              <p className="text-gray-600">Get production-ready React components with clean code</p>
+              <h4 className="text-lg font-medium text-space-cadet mb-2 font-poly">Export Ready</h4>
+              <p className="text-slate-gray font-outfit">Get production-ready React components with clean code</p>
             </div>
           </div>
         </div>
@@ -174,28 +165,16 @@ function ComponentGeneratorContent() {
 // Loading fallback component
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold text-gray-900">Component Generator</h1>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-eggshell">
+      <Header />
       
       {/* Loading Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-space-cadet mb-4 font-poly">
             AI-Powered Component Generator
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-gray max-w-2xl mx-auto font-outfit">
             Loading...
           </p>
         </div>

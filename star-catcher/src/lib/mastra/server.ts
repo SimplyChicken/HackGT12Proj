@@ -15,107 +15,82 @@ const customizeComponentToolSchema = z.object({
 });
 
 // Tool for customizing component code using AI
-const customizeComponentTool = {
-  name: 'customizeComponent',
-  description: 'Customize a React component based on user requirements using AI analysis',
-  parameters: customizeComponentToolSchema,
-  execute: async ({ baseCode, userInput, preferences, componentType }: {
-    baseCode: string;
-    userInput: string;
-    preferences?: any;
-    componentType?: 'button' | 'navbar' | 'hero' | 'card' | 'footer';
-  }) => {
-    try {
-      console.log('🟡 CustomizeComponent tool executing with:', { baseCode, userInput, preferences, componentType });
-      
-      // Learn from user input to improve future recommendations
-      memorySystem.learnFromUserInput(userInput);
-      
-      // Get learned preferences for this component type
-      const learnedPreferences = memorySystem.getComponentPreferences(componentType || 'button');
-      
-      // Merge with provided preferences (provided preferences take precedence)
-      const enhancedPreferences = {
-        ...learnedPreferences,
-        ...preferences,
-        // Add learned style keywords to the prompt
-        learnedKeywords: memorySystem.getPreferencesForPrompt()
-      };
-      
-      // Use the existing generateComponent function with enhanced preferences
-      const result = await generateComponent({
-        componentType: componentType || 'button',
-        userInput,
-        preferences: enhancedPreferences,
-        baseCode // Pass the base code to the generator
-      });
-      
-      console.log('🟡 GenerateComponent result:', result);
-      
-      return {
-        success: true,
-        customizedCode: result.code,
-        description: result.description,
-        features: result.features,
-        learnedPreferences: learnedPreferences
-      };
-    } catch (error) {
-      console.error('🟡 CustomizeComponent tool error:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
-      };
-    }
+const customizeComponentTool = async ({ baseCode, userInput, preferences, componentType }: {
+  baseCode: string;
+  userInput: string;
+  preferences?: any;
+  componentType?: 'button' | 'navbar' | 'hero' | 'card' | 'footer';
+}) => {
+  try {
+    console.log('🟡 CustomizeComponent tool executing with:', { baseCode, userInput, preferences, componentType });
+    
+    // Learn from user input to improve future recommendations
+    memorySystem.learnFromUserInput(userInput);
+    
+    // Get learned preferences for this component type
+    const learnedPreferences = memorySystem.getComponentPreferences(componentType || 'button');
+    
+    // Merge with provided preferences (provided preferences take precedence)
+    const enhancedPreferences = {
+      ...learnedPreferences,
+      ...preferences,
+      // Add learned style keywords to the prompt
+      learnedKeywords: memorySystem.getPreferencesForPrompt()
+    };
+    
+    // Use the existing generateComponent function with enhanced preferences
+    const result = await generateComponent({
+      componentType: componentType || 'button',
+      userInput,
+      preferences: enhancedPreferences,
+      baseCode // Pass the base code to the generator
+    });
+    
+    console.log('🟡 GenerateComponent result:', result);
+    
+    return {
+      success: true,
+      customizedCode: result.code,
+      description: result.description,
+      features: result.features,
+      learnedPreferences: learnedPreferences
+    };
+  } catch (error) {
+    console.error('🟡 CustomizeComponent tool error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
   }
 };
 
 // Tool for generating font pairings
-const generateFontPairingsTool = {
-  name: 'generateFontPairings',
-  description: 'Generate beautiful font pairings using Google Fonts API',
-  parameters: {
-    type: 'object',
-    properties: {
-      purpose: {
-        type: 'string',
-        description: 'The purpose of the font pairing (e.g., website, print, branding)'
-      },
-      primaryCategories: {
-        type: 'array',
-        items: { type: 'string' },
-        description: 'Categories for primary font (serif, sans-serif, handwriting, display)'
-      },
-      secondaryCategories: {
-        type: 'array',
-        items: { type: 'string' },
-        description: 'Categories for secondary font (serif, sans-serif, handwriting, display)'
-      }
-    },
-    required: []
-  },
-  execute: async ({ purpose, primaryCategories, secondaryCategories }: any) => {
-    try {
-      console.log('🟡 GenerateFontPairings tool executing with:', { purpose, primaryCategories, secondaryCategories });
-      
-      const result = await generateFontPairings({
-        purpose,
-        primaryCategories,
-        secondaryCategories
-      });
-      
-      console.log('🟡 GenerateFontPairings result:', result);
-      
-      return {
-        success: true,
-        fontPairing: result
-      };
-    } catch (error) {
-      console.error('🟡 GenerateFontPairings tool error:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
-      };
-    }
+const generateFontPairingsTool = async ({ purpose, primaryCategories, secondaryCategories }: {
+  purpose?: string;
+  primaryCategories?: string[];
+  secondaryCategories?: string[];
+}) => {
+  try {
+    console.log('🟡 GenerateFontPairings tool executing with:', { purpose, primaryCategories, secondaryCategories });
+    
+    const result = await generateFontPairings({
+      purpose,
+      primaryCategories,
+      secondaryCategories
+    });
+    
+    console.log('🟡 GenerateFontPairings result:', result);
+    
+    return {
+      success: true,
+      fontPairing: result
+    };
+  } catch (error) {
+    console.error('🟡 GenerateFontPairings tool error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
   }
 };
 

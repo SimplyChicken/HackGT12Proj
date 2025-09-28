@@ -26,26 +26,26 @@ export default function PairCard({
   const f2 = fontPair?.font2 ?? "sans-serif";
 
   return (
-    <div className="border rounded-md p-4 mb-2 bg-white">
+    <div className="border border-slate-gray/20 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
       {/* Render ONLY Color Pair */}
       {showColors && colorPair && (
         <>
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Color Pair ({colorPair.case_id})</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-space-cadet font-poly">Color Pair ({colorPair.case_id})</h2>
             <div className="flex gap-2">
-              <div className="w-8 h-8 rounded-sm border" style={{ background: c1 }} />
-              <div className="w-8 h-8 rounded-sm border" style={{ background: c2 }} />
+              <div className="w-8 h-8 rounded-sm border border-slate-gray/30" style={{ background: c1 }} />
+              <div className="w-8 h-8 rounded-sm border border-slate-gray/30" style={{ background: c2 }} />
             </div>
           </div>
 
-          <div className="mt-2">
+          <div className="space-y-2">
             <div className="flex justify-between">
-              <span>Color 1:</span>
-              <span className="font-mono">{c1}</span>
+              <span className="text-slate-gray font-outfit">Color 1:</span>
+              <span className="font-mono text-space-cadet">{c1}</span>
             </div>
             <div className="flex justify-between">
-              <span>Color 2:</span>
-              <span className="font-mono">{c2}</span>
+              <span className="text-slate-gray font-outfit">Color 2:</span>
+              <span className="font-mono text-space-cadet">{c2}</span>
             </div>
           </div>
         </>
@@ -54,26 +54,26 @@ export default function PairCard({
       {/* Render ONLY Font Pair */}
       {showFonts && fontPair && (
         <>
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Font Pair ({fontPair.case_id})</h2>
-            <div className="text-sm text-gray-500">{f1} · {f2}</div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-space-cadet font-poly">Font Pair ({fontPair.case_id})</h2>
+            <div className="text-sm text-slate-gray font-outfit">{f1} · {f2}</div>
           </div>
 
-          <div className="mt-2 space-y-2">
+          <div className="space-y-2">
             <div className="flex justify-between">
-              <span>Font 1:</span>
-              <span className="font-mono">{f1}</span>
+              <span className="text-slate-gray font-outfit">Font 1:</span>
+              <span className="font-mono text-space-cadet">{f1}</span>
             </div>
             <div className="flex justify-between">
-              <span>Font 2:</span>
-              <span className="font-mono">{f2}</span>
+              <span className="text-slate-gray font-outfit">Font 2:</span>
+              <span className="font-mono text-space-cadet">{f2}</span>
             </div>
 
-            <div className="mt-3">
-              <p className="text-sm" style={{ fontFamily: f1 }}>
+            <div className="mt-3 space-y-2">
+              <p className="text-sm text-space-cadet" style={{ fontFamily: f1 }}>
                 Sample: The quick brown fox jumps over the lazy dog.
               </p>
-              <p className="text-sm mt-1" style={{ fontFamily: f2 }}>
+              <p className="text-sm text-slate-gray" style={{ fontFamily: f2 }}>
                 Sample: The quick brown fox jumps over the lazy dog.
               </p>
             </div>
@@ -83,13 +83,13 @@ export default function PairCard({
 
       {/* Render both for combos */}
       {showColors && showFonts && colorPair && fontPair && (
-        <div className="mt-3 border-t pt-3">
+        <div className="mt-3 border-t border-slate-gray/20 pt-3">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <div className="w-8 h-8 rounded-sm border" style={{ backgroundColor: c1 }} />
-              <div className="w-8 h-8 rounded-sm border" style={{ backgroundColor: c2 }} />
+              <div className="w-8 h-8 rounded-sm border border-slate-gray/30" style={{ backgroundColor: c1 }} />
+              <div className="w-8 h-8 rounded-sm border border-slate-gray/30" style={{ backgroundColor: c2 }} />
             </div>
-            <div className="text-sm text-gray-600">{f1} / {f2}</div>
+            <div className="text-sm text-slate-gray font-outfit">{f1} / {f2}</div>
           </div>
         </div>
       )}

@@ -76,49 +76,49 @@ export default function AccountsPage() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 text-black">
+    <div className="min-h-screen bg-eggshell text-space-cadet">
       <Header />
       {/* Signed-out view: centered tall rectangle */}
       {!session ? (
         <div className="flex items-center justify-center px-4 py-12">
           <div
-            className="bg-white rounded-2xl shadow-lg border border-gray-200
+            className="bg-white rounded-2xl shadow-lg border border-slate-gray/20
                        w-80 h-[520px] flex flex-col justify-between p-6"
             role="region"
             aria-label="Sign in"
           >
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900 mb-4 text-center">
-                Sign In
+              <h1 className="text-3xl font-bold text-space-cadet mb-4 text-center font-poly">
+                Create Account
               </h1>
 
               <div className="space-y-4">
                 <button
                   onClick={() => signIn("github")}
                   className="w-full inline-flex items-center justify-center gap-2
-                             bg-gray-900 text-white py-2 rounded-md hover:opacity-90 transition"
+                             bg-space-cadet text-white py-3 rounded-md hover:bg-space-cadet/90 transition font-outfit font-medium"
                 >
                   Continue with GitHub
                 </button>
 
-                <div className="border-t pt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <div className="border-t border-slate-gray/20 pt-4">
+                  <label className="block text-sm font-medium text-space-cadet mb-1 font-outfit">Email</label>
                   <input
                     type="email"
                     placeholder="you@domain.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    className="w-full px-3 py-2 border border-slate-gray/30 rounded-md focus:outline-none focus:ring-2 focus:ring-space-cadet/30 focus:border-space-cadet font-outfit"
                     required
                   />
 
-                  <label className="block text-sm font-medium text-gray-700 mt-3 mb-1">Password</label>
+                  <label className="block text-sm font-medium text-space-cadet mt-3 mb-1 font-outfit">Password</label>
                   <input
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    className="w-full px-3 py-2 border border-slate-gray/30 rounded-md focus:outline-none focus:ring-2 focus:ring-space-cadet/30 focus:border-space-cadet font-outfit"
                     required
                   />
 
@@ -126,23 +126,23 @@ export default function AccountsPage() {
                     <button
                       type="button"
                       onClick={() => handleCredentialsSignIn(false)}
-                      className="flex-1 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
+                      className="flex-1 bg-slate-gray text-white py-2 rounded-md hover:bg-slate-gray/90 transition font-outfit font-medium"
                     >
-                      Login with Email
+                      Sign In
                     </button>
                     <button
                       type="button"
                       onClick={() => handleCredentialsSignIn(true)}
-                      className="flex-1 bg-gray-100 text-gray-800 py-2 rounded-md hover:bg-gray-200 transition"
+                      className="flex-1 bg-space-cadet text-white py-2 rounded-md hover:bg-space-cadet/90 transition font-outfit font-medium"
                     >
-                      Create account
+                      Register
                     </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-slate-gray text-center font-outfit">
               By continuing you agree to our terms of service.
             </p>
           </div>
@@ -152,8 +152,8 @@ export default function AccountsPage() {
         <div className="max-w-6xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <span className="text-sm text-gray-500 block">Signed in as</span>
-              <div className="text-lg font-medium text-gray-900">
+              <span className="text-sm text-slate-gray block font-outfit">Signed in as</span>
+              <div className="text-lg font-medium text-space-cadet font-poly">
                 {session.user?.name ?? session.user?.email}
               </div>
             </div>
@@ -161,7 +161,7 @@ export default function AccountsPage() {
             <div>
               <button
                 onClick={() => signOut()}
-                className="text-sm text-red-600 hover:underline"
+                className="text-sm text-red-600 hover:underline font-outfit"
               >
                 Sign out
               </button>
@@ -170,45 +170,78 @@ export default function AccountsPage() {
 
           <div className="mt-6">
             {/* Tab buttons */}
-            <div className="flex gap-4 mb-4">
-              <button onClick={() => setActiveTab("colors")}>Colors</button>
-              <button onClick={() => setActiveTab("fonts")}>Fonts</button>
-              <button onClick={() => setActiveTab("combos")}>Combos</button>
+            <div className="flex gap-4 mb-6">
+              <button 
+                onClick={() => setActiveTab("colors")}
+                className={`px-4 py-2 rounded-md font-outfit font-medium transition-colors ${
+                  activeTab === "colors" 
+                    ? "bg-space-cadet text-white" 
+                    : "bg-white text-slate-gray hover:bg-slate-gray/10 border border-slate-gray/20"
+                }`}
+              >
+                Colors
+              </button>
+              <button 
+                onClick={() => setActiveTab("fonts")}
+                className={`px-4 py-2 rounded-md font-outfit font-medium transition-colors ${
+                  activeTab === "fonts" 
+                    ? "bg-space-cadet text-white" 
+                    : "bg-white text-slate-gray hover:bg-slate-gray/10 border border-slate-gray/20"
+                }`}
+              >
+                Fonts
+              </button>
+              <button 
+                onClick={() => setActiveTab("combos")}
+                className={`px-4 py-2 rounded-md font-outfit font-medium transition-colors ${
+                  activeTab === "combos" 
+                    ? "bg-space-cadet text-white" 
+                    : "bg-white text-slate-gray hover:bg-slate-gray/10 border border-slate-gray/20"
+                }`}
+              >
+                Combos
+              </button>
             </div>
 
             {/* Colors tab */}
             {activeTab === "colors" && (
               <>
-                <div className="text-gray-700">Your saved color pairs:</div>
-                {colorPairs.map((pair, i) => (
-                  <PairCard key={`${pair.case_id}-${i}`} colorPair={pair} showColors />
-                ))}
+                <div className="text-slate-gray font-outfit mb-4">Your saved color pairs:</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {colorPairs.map((pair, i) => (
+                    <PairCard key={`${pair.case_id}-${i}`} colorPair={pair} showColors />
+                  ))}
+                </div>
               </>
             )}
 
             {/* Fonts tab */}
             {activeTab === "fonts" && (
               <>
-                <div className="text-gray-700">Your saved font pairs:</div>
-                {fontPairs.map((pair, i) => (
-                  <PairCard key={`${pair.case_id}-${i}`} fontPair={pair} showFonts />
-                ))}
+                <div className="text-slate-gray font-outfit mb-4">Your saved font pairs:</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {fontPairs.map((pair, i) => (
+                    <PairCard key={`${pair.case_id}-${i}`} fontPair={pair} showFonts />
+                  ))}
+                </div>
               </>
             )}
 
             {/* Combos tab */}
             {activeTab === "combos" && (
               <>
-                <div className="text-gray-700">Your saved combos:</div>
-                {colorPairs.map((c, idx) => (
-                  <PairCard
-                    key={`combo-${c.case_id}-${idx}`}
-                    colorPair={c}
-                    fontPair={fontPairs[idx]} // still naive combo
-                    showColors
-                    showFonts
-                  />
-                ))}
+                <div className="text-slate-gray font-outfit mb-4">Your saved combos:</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {colorPairs.map((c, idx) => (
+                    <PairCard
+                      key={`combo-${c.case_id}-${idx}`}
+                      colorPair={c}
+                      fontPair={fontPairs[idx]} // still naive combo
+                      showColors
+                      showFonts
+                    />
+                  ))}
+                </div>
               </>
             )}
           </div>

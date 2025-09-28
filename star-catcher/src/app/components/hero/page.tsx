@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Sparkles, Wand2, Eye, Code, Layout, Navigation, Zap, CreditCard, Square, ArrowRight } from 'lucide-react';
 import ClientOnlyWrapper from '@/components/ClientOnlyWrapper';
+import Header from '@/components/ui/Header';
 
 // Component navigation data
 const componentNavItems = [
@@ -17,7 +18,7 @@ const componentNavItems = [
 // Floating examples component
 const FloatingExamples = ({ examples }: { examples: string[] }) => {
   return (
-    <div className="relative h-32 overflow-hidden rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+    <div className="relative h-32 overflow-hidden rounded-lg bg-gradient-to-br from-eggshell to-slate-gray/10 p-4">
       <div className="absolute inset-0">
         {examples.map((example, index) => {
           const delays = ['delay-0', 'delay-1000', 'delay-2000', 'delay-3000', 'delay-4000'];
@@ -37,7 +38,7 @@ const FloatingExamples = ({ examples }: { examples: string[] }) => {
                 animationDuration: `${3 + (index % 3)}s`
               }}
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-full px-3 py-1 text-xs text-blue-800 shadow-sm border border-blue-200/50">
+              <div className="bg-white/80 backdrop-blur-sm rounded-full px-3 py-1 text-xs text-space-cadet shadow-sm border border-slate-gray/30 font-outfit">
                 {example}
               </div>
             </div>
@@ -276,34 +277,22 @@ function HeroCustomizerContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold text-gray-900">Hero Customizer</h1>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-eggshell">
+      <Header />
 
       {/* Component Navigation */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-slate-gray/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-4">
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center gap-1 bg-slate-gray/10 rounded-lg p-1">
               {componentNavItems.map((item) => (
                 <Link
                   key={item.type}
                   href={item.href}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all font-outfit ${
                     item.isActive
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'bg-white text-space-cadet shadow-sm'
+                      : 'text-slate-gray hover:text-space-cadet hover:bg-white/50'
                   }`}
                 >
                   {item.icon}
@@ -318,19 +307,19 @@ function HeroCustomizerContent() {
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-space-cadet mb-4 font-poly">
             AI-Powered Hero Customizer
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-gray max-w-2xl mx-auto font-outfit">
             Start with a simple hero section and tell our AI how you want to customize it. 
             Watch as it transforms based on your natural language instructions.
           </p>
         </div>
 
         {/* Preview Section - Full Width */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-gray/20 mb-8">
           {/* Tab Headers */}
-          <div className="flex border-b border-gray-200">
+          <div className="flex border-b border-slate-gray/20">
             <button
               onClick={() => setActiveTab('preview')}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
