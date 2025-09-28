@@ -148,25 +148,33 @@ export default function AccountsPage() {
           </div>
         </div>
       ) : (
-        // Signed-in view: username top-left and tabs underneath
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <span className="text-sm text-slate-gray block font-outfit">Signed in as</span>
-              <div className="text-lg font-medium text-space-cadet font-poly">
-                {session.user?.name ?? session.user?.email}
-              </div>
-            </div>
 
-            <div>
-              <button
-                onClick={() => signOut()}
-                className="text-sm text-red-600 hover:underline font-outfit"
-              >
-                Sign out
-              </button>
-            </div>
-          </div>
+          <div className="max-w-6xl mx-auto px-6 py-8">
+              <div className="flex items-center justify-between mb-6">
+                  <div>
+                      <div className="text-3xl font-medium text-ink font-poly">
+                          Welcome Back Your Inspiration
+                      </div>
+                  </div>
+
+                  <div className="flex flex-col items-end space-y-1">
+                      {/* "signed in as" message */}
+                      <span className="text-xs text-ink/70 font-outfit">
+        Signed in as {session.user?.email}. Sign out?
+      </span>
+
+                      {/* themed button */}
+                      <button
+                          onClick={() => signOut()}
+                          className="inline-flex items-center px-4 py-2 rounded-lg
+                   bg-accent text-sm font-outfit text-white
+                   transition-colors shadow-sm"
+                      >
+                          Sign out
+                      </button>
+                  </div>
+              </div>
+
 
           <div className="mt-6">
             {/* Tab buttons */}
