@@ -23,7 +23,9 @@ html, body {
 .text-ink        { color: var(--ink); }
 .bg-page         { background: var(--background); }
 .bg-light        { background: var(--foreground); }
-.bg-accent        { background: var(--accent); }
+.bg-accent        { background: var(--accent);}
+.bg-dark        { background: var(--ink); }
+.bg-accent:hover    { background: #C0AECF; }
 .border-ink      { border-color: var(--background); }
 .border-bg { border-color: var(--background);}
 .checkbox-ink { accent-color: var(--ink); }

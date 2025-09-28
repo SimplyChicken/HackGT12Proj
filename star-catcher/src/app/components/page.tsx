@@ -87,7 +87,7 @@ const componentTemplates: ComponentTemplate[] = [
 
 function ComponentGeneratorContent() {
   return (
-    <div className="min-h-screen bg-eggshell">
+    <div className="min-h-screen bg-page">
       <Header />
 
       {/* Main Content */}

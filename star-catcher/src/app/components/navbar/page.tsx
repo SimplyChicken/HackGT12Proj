@@ -22,7 +22,7 @@ const componentNavItems = [
 // Floating examples component
 const FloatingExamples = ({ examples }: { examples: string[] }) => {
   return (
-    <div className="relative h-32 overflow-hidden rounded-lg bg-gradient-to-br from-eggshell to-slate-gray/10 p-4">
+    <div className="relative h-32 overflow-hidden rounded-lg bg-gradient-to-br  to-slate-gray/10 p-4">
       <div className="absolute inset-0">
         {examples.map((example, index) => {
           const delays = ['delay-0', 'delay-1000', 'delay-2000', 'delay-3000', 'delay-4000'];
@@ -341,11 +341,10 @@ function NavbarCustomizerContent() {
   };
 
   return (
-    <div className="min-h-screen bg-eggshell">
+    <div className="min-h-screen">
       <Header />
 
       {/* Component Navigation */}
-      <div className="bg-white border-b border-slate-gray/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-4">
             <div className="flex items-center gap-1 bg-slate-gray/10 rounded-lg p-1">
@@ -356,7 +355,7 @@ function NavbarCustomizerContent() {
                   className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all font-outfit ${
                     item.isActive
                       ? 'bg-white text-space-cadet shadow-sm'
-                      : 'text-slate-gray hover:text-space-cadet hover:bg-white/50'
+                      : 'text-ink hover-accent'
                   }`}
                 >
                   {item.icon}
@@ -366,15 +365,14 @@ function NavbarCustomizerContent() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-space-cadet mb-4 font-poly">
             AI-Powered Navbar Customizer
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-gray max-w-2xl mx-auto font-outfit">
             Start with a responsive navbar and tell our AI how you want to customize it. 
             Watch as it transforms based on your natural language instructions.
           </p>
@@ -387,9 +385,9 @@ function NavbarCustomizerContent() {
             <button
               onClick={() => setActiveTab('preview')}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === 'preview'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  activeTab === 'preview'
+                      ? 'text-space-cadet border-b-2 border-space-cadet bg-space-cadet/5'
+                      : 'text-slate-gray hover:text-space-cadet hover:bg-slate-gray/5'
               }`}
             >
               <Eye className="w-4 h-4" />
@@ -398,9 +396,9 @@ function NavbarCustomizerContent() {
             <button
               onClick={() => setActiveTab('source')}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === 'source'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  activeTab === 'source'
+                      ? 'text-space-cadet border-b-2 border-space-cadet bg-space-cadet/5'
+                      : 'text-slate-gray hover:text-space-cadet hover:bg-slate-gray/5'
               }`}
             >
               <Code className="w-4 h-4" />
@@ -480,7 +478,7 @@ function NavbarCustomizerContent() {
                 <button
                   onClick={handleCustomize}
                   disabled={isLoading || !customizationInput.trim()}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-space-cadet text-white rounded-md hover:bg-space-cadet/90 disabled:bg-slate-gray disabled:cursor-not-allowed transition-colors font-outfit font-medium"
                 >
                   {isLoading ? (
                     <>

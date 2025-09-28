@@ -22,7 +22,7 @@ const componentNavItems = [
 // Floating examples component
 const FloatingExamples = ({ examples }: { examples: string[] }) => {
   return (
-    <div className="relative h-32 overflow-hidden rounded-lg bg-gradient-to-br from-eggshell to-slate-gray/10 p-4">
+    <div className="relative h-32 overflow-hidden rounded-lg bg-gradient-to-br to-slate-gray/10 p-4">
       <div className="absolute inset-0">
         {examples.map((example, index) => {
           const delays = ['delay-0', 'delay-1000', 'delay-2000', 'delay-3000', 'delay-4000'];
@@ -321,34 +321,33 @@ function ButtonCustomizerContent() {
   };
 
   return (
-    <div className="min-h-screen bg-eggshell">
+    <div className="min-h-screen">
       <Header />
 
-      {/* Component Navigation */}
-      <div className="bg-white border-b border-slate-gray/20">
+        {/* Component Navigation */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center py-4">
-            <div className="flex items-center gap-1 bg-slate-gray/10 rounded-lg p-1">
-              {componentNavItems.map((item) => (
-                <Link
-                  key={item.type}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all font-outfit ${
-                    item.isActive
-                      ? 'bg-white text-space-cadet shadow-sm'
-                      : 'text-slate-gray hover:text-space-cadet hover:bg-white/50'
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              ))}
+            <div className="flex items-center justify-center py-4">
+                <div className="flex items-center gap-1 bg-slate-gray/10 rounded-lg p-1">
+                    {componentNavItems.map((item) => (
+                        <Link
+                            key={item.type}
+                            href={item.href}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all font-outfit ${
+                                item.isActive
+                                    ? 'bg-white text-space-cadet shadow-sm'
+                                    : 'text-ink hover-accent'
+                            }`}
+                        >
+                            {item.icon}
+                            <span>{item.name}</span>
+                        </Link>
+                    ))}
+                </div>
             </div>
-          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
+
+        {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-space-cadet mb-4 font-poly">

@@ -176,19 +176,19 @@ export default function AccountsPage() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 text-black">
+    <div className="min-h-screen bg-page text-black">
       <Header />
       {/* Signed-out view: centered tall rectangle */}
       {!session ? (
-        <div className="flex items-center justify-center px-4 py-12">
+        <div className="flex items-center justify-center px-4 py-12 font-outfit">
           <div
-            className="bg-white rounded-2xl shadow-lg border border-gray-200
-                       w-80 h-[520px] flex flex-col justify-between p-6"
+            className="bg-light rounded-2xl shadow-lg border border-gray-200
+                      w-[520px] h-[600px] flex flex-col justify-between p-6"
             role="region"
             aria-label="Sign in"
           >
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900 mb-4 text-center">
+              <h1 className="text-3xl font-semibold text-gray-900 mb-8 text-center font-poly">
                 Sign In
               </h1>
 
@@ -196,7 +196,7 @@ export default function AccountsPage() {
                 <button
                   onClick={() => signIn("github")}
                   className="w-full inline-flex items-center justify-center gap-2
-                             bg-gray-900 text-white py-2 rounded-md hover:opacity-90 transition"
+                             bg-dark text-white py-2 rounded-md hover:opacity-90 transition"
                 >
                   Continue with GitHub
                 </button>
@@ -218,7 +218,7 @@ export default function AccountsPage() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300 mb-8"
                     required
                   />
 
@@ -226,14 +226,14 @@ export default function AccountsPage() {
                     <button
                       type="button"
                       onClick={() => handleCredentialsSignIn(false)}
-                      className="flex-1 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
+                      className="flex-1 bg-accent text-white py-2 rounded-md transition"
                     >
                       Login with Email
                     </button>
                     <button
                       type="button"
                       onClick={() => handleCredentialsSignIn(true)}
-                      className="flex-1 bg-gray-100 text-gray-800 py-2 rounded-md hover:bg-gray-200 transition"
+                      className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-md hover:bg-gray-100 transition"
                     >
                       Create account
                     </button>
@@ -598,10 +598,7 @@ export default function AccountsPage() {
                                   : 'bg-blue-100 text-blue-800'
                               }`}
                             >
-                              {keyword.keyword} ({keyword.category}) 
-                              <span className="text-xs opacity-75 ml-1">
-                                {keyword.source === 'ai-analysis' ? '🤖' : '👤'}
-                              </span>
+                              {keyword.keyword} ({keyword.category})
                             </span>
                           ))}
                         </div>

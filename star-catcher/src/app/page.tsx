@@ -7,7 +7,7 @@ import Header from "@/components/ui/Header";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-eggshell">
+    <div className="min-h-screen bg-page">
 
         <Header />
 
