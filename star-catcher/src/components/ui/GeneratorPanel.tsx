@@ -6,9 +6,9 @@ import { memorySystem } from '@/lib/memory';
 import TypographyPreview from './TypographyPreview';
 import PreviewCanvas from './PreviewCanvas';
 import LikeBar from './LikeBar';
-import { Palette, Type, Component as ComponentIcon, Unlock, Lock} from 'lucide-react';
-import { useSession } from "next-auth/react";
-
+import { Palette, Type, Component as ComponentIcon, Unlock, Lock, UserPlus} from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 type TabType = 'fonts' | 'colors' | 'components';
 
@@ -27,6 +27,7 @@ export default function GeneratorPanel({
   isMemoriesOpen = false,
   setIsMemoriesOpen
 }: GeneratorPanelProps) {
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<TabType>('fonts');
   const [currentFont, setCurrentFont] = useState<FontPairing | null>(null);
   const [currentPalette, setCurrentPalette] = useState<ColorPalette | null>(null);
@@ -216,6 +217,30 @@ const handleLike = useCallback(async () => {
   const renderContent = () => {
         return (
           <div className="space-y-6">
+                  {/* Track Preferences Banner for Unauthenticated Users */}
+                  {!session && (
+                    <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <UserPlus className="w-5 h-5 text-blue-600" />
+                          <div>
+                            <h4 className="text-sm font-semibold text-blue-800">
+                              Track Your Design Preferences
+                            </h4>
+                            <p className="text-xs text-blue-600">
+                              Sign up to have the AI learn your style preferences and create personalized designs
+                            </p>
+                          </div>
+                        </div>
+                        <Link href="/accounts">
+                          <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+                            Track Preferences
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
                       <h4 className="mb-3 text-base font-semibold text-gray-800 text-left">
                           Press the spacebar to generate themes!

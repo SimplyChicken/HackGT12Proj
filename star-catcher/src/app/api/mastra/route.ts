@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import getServerSession from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 // Force Node.js runtime to avoid Edge runtime issues with Mastra
 export const runtime = 'nodejs';
@@ -21,12 +23,16 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🔵 Mastra API Route: Received request');
     
+    const session = await getServerSession(authOptions);
+    const isAuthenticated = !!(session as any)?.user?.email;
+    
     const body = await request.json();
     console.log('🔵 Request body:', JSON.stringify(body, null, 2));
     
     const { action, data } = RequestSchema.parse(body);
     console.log('🔵 Parsed action:', action);
     console.log('🔵 Parsed data:', JSON.stringify(data, null, 2));
+    console.log('🔵 User authenticated:', isAuthenticated);
 
     let result;
 
@@ -56,7 +62,28 @@ export async function POST(request: NextRequest) {
         const { componentAgent } = await import('@/lib/mastra/server');
         console.log('🔵 Using Mastra componentAgent');
         
-        // Create a prompt for the agent to customize the component
+        // First, extract themes from user input if user is authenticated
+        if (isAuthenticated) {
+          console.log('🔵 Extracting themes from user input...');
+          try {
+            // Import the tool directly and call it
+            const { extractThemesTool } = await import('@/lib/mastra/server');
+            if (extractThemesTool && extractThemesTool.execute) {
+              const toolResult = await extractThemesTool.execute({
+                userInput: data.userInput,
+                userId: (session as any)?.user?.email
+              });
+              console.log('🔵 Theme extraction tool result:', toolResult);
+            } else {
+              console.log('🔵 extractThemesTool not available');
+            }
+          } catch (error) {
+            console.error('🔵 Theme extraction failed:', error);
+            // Continue with component customization even if theme extraction fails
+          }
+        }
+        
+        // Create a comprehensive prompt for the agent to customize the component
         const prompt = `Customize this ${data.componentType || 'button'} component based on the user's requirements.
 
 Base Component Code:
@@ -67,6 +94,8 @@ ${data.baseCode}
 User Requirements: "${data.userInput}"
 
 User Preferences: ${JSON.stringify(data.preferences || {}, null, 2)}
+
+Authentication Status: ${isAuthenticated ? 'User is authenticated - preferences will be learned and stored' : 'User is not authenticated - preferences will not be stored'}
 
 CRITICAL IFRAME COMPATIBILITY REQUIREMENTS - MUST FOLLOW ALL RULES:
 This component will run in an iframe environment with React UMD + Babel standalone. You MUST ensure compatibility:
@@ -123,7 +152,6 @@ CRITICAL STRUCTURE PRESERVATION RULES - MUST FOLLOW:
 
 Please analyze the base code and user requirements, then return the complete customized React component code that fully implements the user's request while preserving the exact structure above. Return only the React component code without explanations, following ALL the iframe compatibility and structure preservation rules above.`;
 
-        // Call the Mastra agent using generate method
         const agentResult = await componentAgent.generateVNext(prompt);
         
         console.log('🔵 Agent result:', JSON.stringify(agentResult, null, 2));

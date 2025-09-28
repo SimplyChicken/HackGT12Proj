@@ -144,9 +144,43 @@ export class MemorySystem {
   }
 
   // Enhanced Preference Learning Methods
-  public learnFromUserInput(userInput: string, feedback?: 'like' | 'dislike'): void {
-    this.preferenceLearner.learnFromInput(userInput, feedback);
-    this.savePreferences();
+  public async learnFromUserInput(userInput: string, feedback?: 'like' | 'dislike', isAuthenticated: boolean = false): Promise<void> {
+    // Check if we're in a server context (no window object)
+    const isServerContext = typeof window === 'undefined';
+    
+    // Only learn preferences if user is authenticated or if we're in server context
+    if (isAuthenticated || isServerContext) {
+      this.preferenceLearner.learnFromInput(userInput, feedback);
+      
+      // Only save to localStorage if we're in client context
+      if (!isServerContext) {
+        this.savePreferences();
+      }
+      
+      // Save to MongoDB if we're in server context or if user is authenticated
+      if (isServerContext || isAuthenticated) {
+        try {
+          await fetch('/api/preferences', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'learn',
+              data: {
+                userInput,
+                feedback
+              }
+            }),
+          });
+        } catch (error) {
+          console.error('Failed to save preferences to MongoDB:', error);
+        }
+      }
+    } else {
+      // For unauthenticated users, just log that preferences could be tracked
+      console.log('Preferences tracking available for authenticated users. User input:', userInput);
+    }
   }
 
   public getPreferencesForPrompt(): string {
@@ -196,6 +230,32 @@ export class MemorySystem {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(PREFERENCES_STORAGE_KEY);
     this.preferenceLearner = new PreferenceLearner('anonymous');
+  }
+
+  // Load preferences from MongoDB
+  public async loadPreferencesFromServer(): Promise<void> {
+    try {
+      const response = await fetch('/api/preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'get',
+          data: {}
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.result.preferences) {
+          this.preferenceLearner.setPreferences(result.result.preferences);
+          this.savePreferences(); // Save to localStorage as backup
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load preferences from server:', error);
+    }
   }
 }
 
