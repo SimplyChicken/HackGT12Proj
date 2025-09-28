@@ -1,4 +1,6 @@
-export const runtime = "node";
+export const config = {
+  runtime: "node",
+};
 
 import { NextRequest, NextResponse } from "next/server";
 import User from "../../../models/User";
