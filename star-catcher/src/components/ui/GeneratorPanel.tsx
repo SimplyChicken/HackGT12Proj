@@ -51,7 +51,6 @@ export default function GeneratorPanel({
 
 
     const generateDesign = useCallback(async (type: TabType, options: any = {}) => {
-    setIsLoading(true);
     setError(null);
 
     try {
@@ -90,10 +89,49 @@ export default function GeneratorPanel({
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Generation error:', err);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
+
+    const buildOptions = useCallback(() => {
+        return {
+            primaryCategories,
+            secondaryCategories,
+            ...(currentFont && (lockPrimary || lockSecondary)
+                ? {
+                    locked: {
+                        ...(lockPrimary ? {
+                            primaryName: currentFont.primary.name,
+                            primaryWeight: currentFont.primary.weight,
+                        } : {}),
+                        ...(lockSecondary ? {
+                            secondaryName: currentFont.secondary.name,
+                            secondaryWeight: currentFont.secondary.weight,
+                        } : {}),
+                    }
+                }
+                : {}),
+        };
+    }, [activeTab, primaryCategories, secondaryCategories, currentFont, lockPrimary, lockSecondary]);
+
+    const generateBoth = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const fontOptions = buildOptions();
+
+            await Promise.all([
+                generateDesign('fonts', fontOptions),
+                generateDesign('colors', {}), // color-specific options can go here later
+            ]);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred');
+            console.error('Generation error (both):', err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [buildOptions, generateDesign]);
+
 
   const handleLike = useCallback((type: TabType) => {
     let currentData: any = null;
@@ -117,32 +155,9 @@ export default function GeneratorPanel({
     }
   }, [currentFont, currentPalette, currentComponent]);
 
-    const buildOptions = useCallback(() => {
-        if (activeTab !== 'fonts') return {};
-        return {
-            primaryCategories,
-            secondaryCategories,
-            ...(currentFont && (lockPrimary || lockSecondary)
-                ? {
-                    locked: {
-                        ...(lockPrimary ? {
-                            primaryName: currentFont.primary.name,
-                            primaryWeight: currentFont.primary.weight,
-                        } : {}),
-                        ...(lockSecondary ? {
-                            secondaryName: currentFont.secondary.name,
-                            secondaryWeight: currentFont.secondary.weight,
-                        } : {}),
-                    }
-                }
-                : {}),
-        };
-    }, [activeTab, primaryCategories, secondaryCategories, currentFont, lockPrimary, lockSecondary]);
 
-
-    useEffect(() => {
+    useEffect(() => { //space to generate new fonts and colors
         const handler = (e: KeyboardEvent) => {
-            // Ignore when typing in fields/buttons/links
             const t = e.target as HTMLElement | null;
             const tag = t?.tagName;
             const isTyping =
@@ -151,43 +166,38 @@ export default function GeneratorPanel({
 
             if (isTyping) return;
 
-            // Space = generate
             if (e.code === 'Space') {
-                e.preventDefault(); // stop page from scrolling
-                if (!isLoading) {
-                    generateDesign(activeTab, buildOptions()); // ← same call as your button
-                }
+                e.preventDefault();
+                if (!isLoading) generateBoth();
             }
         };
 
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
-    }, [isLoading, activeTab, generateDesign, buildOptions]);
+    }, [isLoading, generateBoth]);
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'fonts':
         return (
           <div className="space-y-6">
-              {activeTab === 'fonts' && (
                   <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-                      <h4 className="mb-3 text-base font-semibold text-gray-800">
-                          Filters
+                      <h4 className="mb-3 text-base font-semibold text-gray-800 text-left">
+                          Press the spacebar to generate themes!
                       </h4>
 
                       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                           {/* Primary */}
                           <div>
                               <div className="flex items-center gap-2 mb-2">
-                              <p className="mb-2 text-sm font-medium text-gray-700">Primary categories</p>
-
-                              <button
-                                  type="button"
-                                  onClick={() => setLockPrimary(v => !v)}
-                                  className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700"
-                              >
-                                  {lockPrimary ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-                              </button>
+                                  <span className="text-sm font-medium text-gray-700 leading-none">
+                                        Font One
+                                    </span>
+                                  <button
+                                      type="button"
+                                      onClick={() => setLockPrimary(v => !v)}
+                                      className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700"
+                                  >
+                                      {lockPrimary ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                                  </button>
                               </div>
 
 
@@ -213,15 +223,17 @@ export default function GeneratorPanel({
                           {/* Secondary */}
                           <div>
                               <div className="flex items-center gap-2 mb-2">
-                              <p className="mb-2 text-sm font-medium text-gray-700">Secondary categories</p>
+                                  <span className="text-sm font-medium text-gray-700 leading-none">
+                                    Font Two
+                                 </span>
 
-                              <button
-                                  type="button"
-                                  onClick={() => setLockSecondary(v => !v)}
-                                  className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700"
-                              >
-                                  {lockSecondary ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-                              </button>
+                                  <button
+                                      type="button"
+                                      onClick={() => setLockSecondary(v => !v)}
+                                      className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700"
+                                  >
+                                      {lockSecondary ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                                  </button>
                               </div>
 
                               <div className="flex flex-wrap gap-4">
@@ -244,9 +256,8 @@ export default function GeneratorPanel({
                           </div>
                       </div>
                   </div>
-              )}
 
-              <TypographyPreview fontPairing={currentFont} />
+              <TypographyPreview fontPairing={currentFont} palette={currentPalette} />
             {currentFont && (
               <LikeBar
                 onLike={() => handleLike('fonts')}
@@ -254,60 +265,10 @@ export default function GeneratorPanel({
             )}
           </div>
         );
-      case 'colors':
-        return (
-          <div className="space-y-6">
-            {/* <PalettePreview palette={currentPalette} /> */}
-            <div className="p-8 text-center text-gray-500">
-              Color palette preview coming soon...
-            </div>
-            {currentPalette && (
-              <LikeBar
-                onLike={() => handleLike('colors')}
-              />
-            )}
-          </div>
-        );
-      case 'components':
-        return (
-          <div className="space-y-6">
-            <PreviewCanvas component={currentComponent} />
-            {currentComponent && (
-              <LikeBar
-                onLike={() => handleLike('components')}
-              />
-            )}
-          </div>
-        );
-      default:
-        return null;
-    }
   };
 
   return (
     <div className={`bg-white rounded-lg shadow-lg ${className}`}>
-      {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8 px-6">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
-              >
-                <Icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
 
       {/* Content */}
       <div className="p-6">
@@ -317,28 +278,6 @@ export default function GeneratorPanel({
           </div>
         )}
 
-        {/* Generate Button */}
-        <div className="mb-6">
-          <button
-            onClick={() => generateDesign(activeTab, buildOptions())}
-            disabled={isLoading ||
-                (activeTab === 'fonts' &&
-                    (primaryCategories.length === 0 || secondaryCategories.length === 0))
-            }
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-medium py-3 px-4 rounded-md transition-colors flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Generating...
-              </>
-            ) : (
-              `Generate ${activeTab === 'fonts' ? 'Font Pairing' : activeTab === 'colors' ? 'Color Palette' : 'Component'}`
-            )}
-          </button>
-        </div>
-
-        {/* Content */}
         {renderContent()}
       </div>
     </div>
