@@ -1,27 +1,65 @@
 import { Schema, model, models } from "mongoose";
 
-// Sub-schema for Color Pairs
+// Sub-schema for Color Pairs - support both old and new formats
 const ColorPairSchema = new Schema({
   case_id: { type: String, required: true },
+  // New format
+  primary: {
+    name: { type: String },
+    value: {
+      type: String,
+      match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
+    },
+    contrast: { type: String },
+  },
+  secondary: {
+    name: { type: String },
+    value: {
+      type: String,
+      match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
+    },
+    contrast: { type: String },
+  },
+  accent: {
+    name: { type: String },
+    value: {
+      type: String,
+      match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
+    },
+    contrast: { type: String },
+  },
+  // Old format (for backward compatibility)
   color: {
     type: String,
-    required: true,
     match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
-    default: "#FFFFFF",
   },
   color2: {
     type: String,
-    required: true,
     match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
-    default: "#000000",
   },
 }, { _id: false }); // optional: disables automatic _id for sub-documents
 
-// Sub-schema for Font Pairs
+// Sub-schema for Font Pairs - support both old and new formats
 const FontPairSchema = new Schema({
   case_id: { type: String, required: true },
-  font: { type: String, required: true, default: "Arial" },
-  font2: { type: String, required: true, default: "sans-serif" },
+  // New format
+  primary: {
+    name: { type: String },
+    googleFontUrl: { type: String },
+    weight: { type: String },
+    style: { type: String },
+    usage: { type: String },
+  },
+  secondary: {
+    name: { type: String },
+    googleFontUrl: { type: String },
+    weight: { type: String },
+    style: { type: String },
+    usage: { type: String },
+  },
+  // Old format (for backward compatibility)
+  font: { type: String },
+  font2: { type: String },
 }, { _id: false });
 
 const UserSchema = new Schema({
@@ -55,8 +93,21 @@ const UserSchema = new Schema({
   
   // Color and font pairs from main branch
   colorPairs: { type: [ColorPairSchema], default: [] },
-  fontPairs: { type: [FontPairSchema], default: [] }
+  fontPairs: { type: [FontPairSchema], default: [] },
+  
+  // Combos - saved combinations of colors and fonts
+  combos: [{
+    case_id: { type: String, required: true },
+    colorPair: ColorPairSchema,
+    fontPair: FontPairSchema,
+    savedAt: { type: Date, default: Date.now }
+  }]
 });
 
-export default models.User || model("User", UserSchema);
+// Force delete the old model if it exists to use the new schema
+if (models.User) {
+  delete models.User;
+}
+
+export default model("User", UserSchema);
 

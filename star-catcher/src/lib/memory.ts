@@ -1,5 +1,4 @@
-import { MemoryItem, Feedback, MemoryItemSchema, FeedbackSchema, UserPreferences } from './schemas';
-import { PreferenceLearner } from './preferences/preferenceLearner';
+import { MemoryItem, Feedback, MemoryItemSchema, FeedbackSchema } from './schemas';
 
 const MEMORY_STORAGE_KEY = 'design-memories';
 const FEEDBACK_STORAGE_KEY = 'design-feedback';
@@ -7,12 +6,8 @@ const PREFERENCES_STORAGE_KEY = 'user-preferences';
 
 export class MemorySystem {
   private static instance: MemorySystem;
-  private preferenceLearner: PreferenceLearner;
   
-  private constructor() {
-    this.preferenceLearner = new PreferenceLearner('anonymous');
-    this.loadPreferences();
-  }
+  private constructor() {}
   
   public static getInstance(): MemorySystem {
     if (!MemorySystem.instance) {
@@ -45,7 +40,14 @@ export class MemorySystem {
       if (!stored) return [];
       
       const memories = JSON.parse(stored);
-      return memories.map((memory: any) => MemoryItemSchema.parse(memory));
+      return memories.map((memory: any) => {
+        try {
+          return MemoryItemSchema.parse(memory);
+        } catch (parseError) {
+          console.warn('Skipping invalid memory:', memory);
+          return null;
+        }
+      }).filter(Boolean) as MemoryItem[];
     } catch (error) {
       console.error('Error parsing memories:', error);
       return [];
@@ -88,7 +90,14 @@ export class MemorySystem {
       if (!stored) return [];
       
       const feedbacks = JSON.parse(stored);
-      return feedbacks.map((feedback: any) => FeedbackSchema.parse(feedback));
+      return feedbacks.map((feedback: any) => {
+        try {
+          return FeedbackSchema.parse(feedback);
+        } catch (parseError) {
+          console.warn('Skipping invalid feedback:', feedback);
+          return null;
+        }
+      }).filter(Boolean) as Feedback[];
     } catch (error) {
       console.error('Error parsing feedbacks:', error);
       return [];
@@ -143,120 +152,6 @@ export class MemorySystem {
     };
   }
 
-  // Enhanced Preference Learning Methods
-  public async learnFromUserInput(userInput: string, feedback?: 'like' | 'dislike', isAuthenticated: boolean = false): Promise<void> {
-    // Check if we're in a server context (no window object)
-    const isServerContext = typeof window === 'undefined';
-    
-    // Only learn preferences if user is authenticated or if we're in server context
-    if (isAuthenticated || isServerContext) {
-      this.preferenceLearner.learnFromInput(userInput, feedback);
-      
-      // Only save to localStorage if we're in client context
-      if (!isServerContext) {
-        this.savePreferences();
-      }
-      
-      // Save to MongoDB if we're in server context or if user is authenticated
-      if (isServerContext || isAuthenticated) {
-        try {
-          await fetch('/api/preferences', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action: 'learn',
-              data: {
-                userInput,
-                feedback
-              }
-            }),
-          });
-        } catch (error) {
-          console.error('Failed to save preferences to MongoDB:', error);
-        }
-      }
-    } else {
-      // For unauthenticated users, just log that preferences could be tracked
-      console.log('Preferences tracking available for authenticated users. User input:', userInput);
-    }
-  }
-
-  public getPreferencesForPrompt(): string {
-    return this.preferenceLearner.getPreferencesForPrompt();
-  }
-
-  public getComponentPreferences(componentType: string): any {
-    return this.preferenceLearner.getComponentPreferences(componentType);
-  }
-
-  public getTopPreferences(category: string, limit: number = 5): any[] {
-    return this.preferenceLearner.getTopPreferences(category, limit);
-  }
-
-  // Preference Storage Methods
-  private savePreferences(): void {
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const preferences = this.preferenceLearner.getPreferences();
-      localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences));
-    } catch (error) {
-      console.error('Error saving preferences:', error);
-    }
-  }
-
-  private loadPreferences(): void {
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const stored = localStorage.getItem(PREFERENCES_STORAGE_KEY);
-      if (stored) {
-        const preferences = JSON.parse(stored);
-        this.preferenceLearner.setPreferences(preferences);
-      }
-    } catch (error) {
-      console.error('Error loading preferences:', error);
-    }
-  }
-
-  public updatePreferences(newPreferences: Partial<UserPreferences>): void {
-    this.preferenceLearner.mergePreferences(newPreferences);
-    this.savePreferences();
-  }
-
-  public clearPreferences(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem(PREFERENCES_STORAGE_KEY);
-    this.preferenceLearner = new PreferenceLearner('anonymous');
-  }
-
-  // Load preferences from MongoDB
-  public async loadPreferencesFromServer(): Promise<void> {
-    try {
-      const response = await fetch('/api/preferences', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'get',
-          data: {}
-        }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.result.preferences) {
-          this.preferenceLearner.setPreferences(result.result.preferences);
-          this.savePreferences(); // Save to localStorage as backup
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load preferences from server:', error);
-    }
-  }
 }
 
 export const memorySystem = MemorySystem.getInstance();

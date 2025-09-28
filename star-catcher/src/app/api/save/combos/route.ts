@@ -1,4 +1,3 @@
-// /api/save/colors/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
@@ -11,34 +10,38 @@ export async function POST(req: NextRequest) {
 
     // Parse request body
     const body = await req.json();
-    const { email, primary, secondary, accent } = body;
+    const { colorPair, fontPair } = body;
+
+    const session = await auth();
+    if (!(session as any)?.user?.email) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
 
     // Validate required fields
-    if (!email || !primary || !secondary || !accent) {
+    if (!colorPair || !fontPair) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
+        { success: false, error: "Missing color pair or font pair" },
         { status: 400 }
       );
     }
 
-    // Create a valid color pair object with case_id - save the full objects with names and values
-    const colorData = { 
+    // Create a combo object with case_id
+    const comboData = { 
       case_id: Date.now().toString(),
-      primary,
-      secondary,
-      accent
+      colorPair,
+      fontPair
     };
 
-    console.log('Color save API - colorData to save:', colorData);
+    console.log('Combo save API - comboData to save:', comboData);
 
     // Update the user document
     const updatedUser = await User.findOneAndUpdate(
-      { email },
-      { $push: { colorPairs: colorData } },
+      { email: (session as any).user.email },
+      { $push: { combos: comboData } },
       { new: true }
     );
 
-    console.log('Color save API - saved successfully, updated user:', updatedUser);
+    console.log('Combo save API - saved successfully, updated user:', updatedUser);
 
     if (!updatedUser) {
       return NextResponse.json(
@@ -49,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: updatedUser });
   } catch (err: any) {
-    console.error("Error saving color pair:", err);
+    console.error("Error saving combo:", err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
@@ -71,16 +74,16 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    console.log('Color delete API - deleting case_id:', caseId, 'for user:', (session as any).user.email);
+    console.log('Combo delete API - deleting case_id:', caseId, 'for user:', (session as any).user.email);
 
-    // Remove the color pair from the user document
+    // Remove the combo from the user document
     const updatedUser = await User.findOneAndUpdate(
       { email: (session as any).user.email },
-      { $pull: { colorPairs: { case_id: caseId } } },
+      { $pull: { combos: { case_id: caseId } } },
       { new: true }
     );
 
-    console.log('Color delete API - result:', updatedUser);
+    console.log('Combo delete API - result:', updatedUser);
 
     if (!updatedUser) {
       return NextResponse.json(
@@ -91,7 +94,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: updatedUser });
   } catch (err: any) {
-    console.error("Error deleting color pair:", err);
+    console.error("Error deleting combo:", err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

@@ -95,8 +95,7 @@ Return only the JSON object, no other text.`;
         }
       }
       
-      // Also store in local memory system for immediate use
-      await memorySystem.learnFromUserInput(userInput, undefined, true);
+      // Memory system no longer handles user input learning
     
     return {
       success: true,

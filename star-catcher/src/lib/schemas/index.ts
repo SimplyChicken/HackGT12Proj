@@ -29,17 +29,14 @@ export const ColorTokenSchema = z.object({
 
 export const ColorPaletteSchema = z.object({
   primary: z.object({
-    name: z.string(),
     value: z.string(),
     contrast: z.string(),
   }),
   secondary: z.object({
-    name: z.string(),
     value: z.string(),
     contrast: z.string(),
   }),
   accent: z.object({
-    name: z.string(),
     value: z.string(),
     contrast: z.string(),
   }),
@@ -83,18 +80,38 @@ export type Feedback = z.infer<typeof FeedbackSchema>;
 // User Style Preferences Schema
 export const StyleKeywordSchema = z.object({
   keyword: z.string(),
-  category: z.enum(['color', 'layout', 'typography', 'spacing', 'animation', 'theme', 'component-style']),
+  category: z.enum(['color', 'layout', 'typography', 'spacing', 'animation', 'theme', 'component-style', 'pattern']),
   weight: z.number().min(0).max(1).default(0.5), // How much user likes this keyword
   usageCount: z.number().default(1),
   lastUsed: z.number().default(() => Date.now()),
+  source: z.enum(['user-input', 'ai-analysis']).default('user-input'),
 });
 
 export const UserPreferencesSchema = z.object({
   userId: z.string(),
+  
+  // Raw extracted data from OpenAI analysis
+  extractedThemes: z.array(z.string()).default([]),
+  extractedColors: z.array(z.string()).default([]),
+  extractedStyles: z.array(z.string()).default([]),
+  extractedKeywords: z.array(z.string()).default([]),
+  extractedPatterns: z.array(z.string()).default([]),
+  
+  // Processed preferences with weights and usage tracking
   styleKeywords: z.array(StyleKeywordSchema).default([]),
+  
+  // Aggregated preferences
   preferredColors: z.array(z.string()).default([]),
-  preferredThemes: z.array(z.enum(['modern', 'minimal', 'bold', 'elegant', 'playful', 'corporate', 'creative'])).default([]),
-  componentPreferences: z.record(z.any()).default({}), // Component-specific preferences
+  preferredThemes: z.array(z.string()).default([]), // No enum restriction - let AI generate themes
+  preferredStyles: z.array(z.string()).default([]),
+  preferredPatterns: z.array(z.string()).default([]),
+  
+  // Component-specific preferences
+  componentPreferences: z.record(z.any()).default({}),
+  
+  // Analysis metadata
+  analysisCount: z.number().default(0),
+  lastAnalysis: z.date().optional(),
   lastUpdated: z.number().default(() => Date.now()),
 });
 

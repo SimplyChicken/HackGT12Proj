@@ -57,7 +57,6 @@ export default function GeneratorPanel({
     setError(null);
 
     try {
-      const memories = memorySystem.getLikedItems();
       const response = await fetch('/api/design', {
         method: 'POST',
         headers: {
@@ -66,7 +65,6 @@ export default function GeneratorPanel({
         body: JSON.stringify({
           type: type === 'fonts' ? 'font' : type === 'colors' ? 'color' : 'component',
           options,
-          memories,
         }),
       });
 
@@ -75,19 +73,16 @@ export default function GeneratorPanel({
       }
 
       const result = await response.json();
+      console.log('GeneratorPanel received result:', result);
 
       if (type === 'fonts') {
+        console.log('Setting currentFont to:', result.data);
         setCurrentFont(result.data);
-        const memory = memorySystem.createMemoryFromData('font', result.data);
-        memorySystem.saveMemory(memory);
       } else if (type === 'colors') {
+        console.log('Setting currentPalette to:', result.data);
         setCurrentPalette(result.data);
-        const memory = memorySystem.createMemoryFromData('color', result.data);
-        memorySystem.saveMemory(memory);
       } else if (type === 'components') {
         setCurrentComponent(result.data);
-        const memory = memorySystem.createMemoryFromData('component', result.data);
-        memorySystem.saveMemory(memory);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -135,25 +130,48 @@ export default function GeneratorPanel({
         }
     }, [buildOptions, generateDesign]);
 
-const { data: session } = useSession();
-
 const handleLike = useCallback(async () => {
   const userEmail = session?.user?.email;
   if (!userEmail) return console.error("No logged-in user email found");
 
-  // Save font if it exists
-  if (currentFont) {
-    const fontMemory = memorySystem.createMemoryFromData('font', currentFont);
-    const fontFeedback = memorySystem.createFeedbackFromMemory(fontMemory, 'like');
-    memorySystem.saveMemory(fontMemory);
-    memorySystem.saveFeedback(fontFeedback);
+  // If both font and colors exist, save as a combo
+  if (currentFont && currentPalette) {
+    const comboData = {
+      colorPair: {
+        primary: currentPalette.primary,
+        secondary: currentPalette.secondary,
+        accent: currentPalette.accent,
+      },
+      fontPair: currentFont
+    };
 
     try {
+      console.log('Saving combo data:', comboData);
+      const res = await fetch('/api/save/combos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(comboData),
+      });
+      console.log('Combo save response status:', res.status);
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to save combo');
+      console.log('Combo saved:', result);
+      return; // Exit early since we saved as combo
+    } catch (err) {
+      console.error('Combo save error:', err);
+    }
+  }
+
+  // Save font if it exists (and no combo was saved)
+  if (currentFont) {
+    try {
+      console.log('Saving font data:', currentFont);
       const res = await fetch('/api/save/fonts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentFont),
       });
+      console.log('Font save response status:', res.status);
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to save font');
       console.log('Font saved:', result);
@@ -162,26 +180,23 @@ const handleLike = useCallback(async () => {
     }
   }
 
-  // Save colors if they exist
+  // Save colors if they exist (and no combo was saved)
   if (currentPalette) {
     const colorData = {
       email: userEmail,
-      case_id: Date.now().toString(),
-      color: currentPalette.primary.value,
-      color2: currentPalette.secondary.value,
+      primary: currentPalette.primary,
+      secondary: currentPalette.secondary,
+      accent: currentPalette.accent,
     };
 
-    const colorMemory = memorySystem.createMemoryFromData('color', colorData);
-    const colorFeedback = memorySystem.createFeedbackFromMemory(colorMemory, 'like');
-    memorySystem.saveMemory(colorMemory);
-    memorySystem.saveFeedback(colorFeedback);
-
     try {
+      console.log('Saving color data:', colorData);
       const res = await fetch('/api/save/colors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(colorData),
       });
+      console.log('Color save response status:', res.status);
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to save color');
       console.log('Color saved:', result);

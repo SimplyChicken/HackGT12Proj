@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkles, Wand2, Eye, Code, Layout, Navigation, Zap, CreditCard, Square, ArrowRight } from 'lucide-react';
+import { Sparkles, Wand2, Eye, Code, Layout, Navigation, Zap, CreditCard, Square, ArrowRight, Heart } from 'lucide-react';
 import ClientOnlyWrapper from '@/components/ClientOnlyWrapper';
 import Header from '@/components/ui/Header';
+import TopPreferences from '@/components/ui/TopPreferences';
+import { useSession } from 'next-auth/react';
 
 // Component navigation data
 const componentNavItems = [
@@ -188,10 +190,13 @@ const DynamicHeroPreview = ({ code }: { code: string }) => {
 };
 
 function HeroCustomizerContent() {
+  const { data: session } = useSession();
   const [customizationInput, setCustomizationInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [customizedCode, setCustomizedCode] = useState('');
   const [activeTab, setActiveTab] = useState<'preview' | 'source'>('preview');
+  const [userInputs, setUserInputs] = useState<string[]>([]);
+  const [isFavoriting, setIsFavoriting] = useState(false);
 
   // Default hero template (iframe-safe)
   const defaultHeroCode = `function Hero() {
@@ -260,6 +265,9 @@ function HeroCustomizerContent() {
       if (result.success && result.result.success) {
         setCustomizedCode(result.result.customizedCode);
         
+        // Track the user input
+        setUserInputs(prev => [...prev, customizationInput]);
+        
         // Clear the input
         setCustomizationInput('');
         
@@ -273,6 +281,53 @@ function HeroCustomizerContent() {
       alert('Failed to customize hero. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleFavorite = async () => {
+    if (!session?.user?.email) {
+      alert('Please sign in to save components');
+      return;
+    }
+
+    setIsFavoriting(true);
+    try {
+      const currentCode = customizedCode || defaultHeroCode;
+      
+      const response = await fetch('/api/save/components', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          component: {
+            type: 'hero',
+            name: 'Custom Hero',
+            code: currentCode,
+            description: `Hero customized with: ${userInputs.join(', ')}`
+          },
+          userInputs: userInputs
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save component');
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Component saved successfully! Check your Components tab in your account.');
+        // Reset the component to start fresh
+        setCustomizedCode('');
+        setUserInputs([]);
+      } else {
+        throw new Error('Failed to save component');
+      }
+    } catch (error) {
+      console.error('Error saving component:', error);
+      alert('Failed to save component. Please try again.');
+    } finally {
+      setIsFavoriting(false);
     }
   };
 
@@ -412,34 +467,50 @@ function HeroCustomizerContent() {
                 />
               </div>
 
-              <button
-                onClick={handleCustomize}
-                disabled={isLoading || !customizationInput.trim()}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Customizing...
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="w-4 h-4" />
-                    Customize Hero
-                  </>
+              <div className="space-y-3">
+                <button
+                  onClick={handleCustomize}
+                  disabled={isLoading || !customizationInput.trim()}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Customizing...
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="w-4 h-4" />
+                      Customize Hero
+                    </>
+                  )}
+                </button>
+
+                {(customizedCode || userInputs.length > 0) && (
+                  <button
+                    onClick={handleFavorite}
+                    disabled={isFavoriting || !session?.user?.email}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-pink-500 text-white rounded-md hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isFavoriting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Heart className="w-4 h-4" />
+                        {session?.user?.email ? 'Save Component' : 'Sign in to Save'}
+                      </>
+                    )}
+                  </button>
                 )}
-              </button>
+              </div>
             </div>
 
             <div className="space-y-4">
-              <h4 className="text-sm font-medium text-blue-900">Try these examples:</h4>
-              <FloatingExamples examples={[
-                "Change to a green gradient",
-                "Add an image background",
-                "Make it more compact",
-                "Add multiple buttons",
-                "Change the text content"
-              ]} />
+              <h4 className="text-sm font-medium text-space-cadet font-outfit">Your Saved Preferences:</h4>
+              <TopPreferences />
             </div>
           </div>
         </div>

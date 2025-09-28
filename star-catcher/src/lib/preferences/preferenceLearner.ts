@@ -6,10 +6,18 @@ export class PreferenceLearner {
   constructor(userId: string) {
     this.preferences = {
       userId,
+      extractedThemes: [],
+      extractedColors: [],
+      extractedStyles: [],
+      extractedKeywords: [],
+      extractedPatterns: [],
       styleKeywords: [],
       preferredColors: [],
       preferredThemes: [],
+      preferredStyles: [],
+      preferredPatterns: [],
       componentPreferences: {},
+      analysisCount: 0,
       lastUpdated: Date.now()
     };
   }
@@ -30,7 +38,8 @@ export class PreferenceLearner {
       category: 'theme',
       weight: feedback === 'like' ? 0.7 : feedback === 'dislike' ? 0.3 : 0.5,
       usageCount: 1,
-      lastUsed: Date.now()
+      lastUsed: Date.now(),
+      source: 'user-input'
     };
     
     this.updateKeywordPreference(inputKeyword, feedback);
@@ -162,6 +171,109 @@ export class PreferenceLearner {
       ...this.preferences.componentPreferences[componentType],
       ...preferences
     };
+  }
+
+  /**
+   * Learn from component analysis and update preferences
+   */
+  learnFromComponentAnalysis(componentType: string, analysis: any): void {
+    if (!analysis) return;
+
+    // Store raw extracted data
+    if (analysis.themes && Array.isArray(analysis.themes)) {
+      this.preferences.extractedThemes = [...new Set([...(this.preferences.extractedThemes || []), ...analysis.themes])];
+      this.preferences.preferredThemes = [...new Set([...(this.preferences.preferredThemes || []), ...analysis.themes])];
+      
+      // Also add as style keywords with AI source
+      analysis.themes.forEach((theme: string) => {
+        const themeKeyword = {
+          keyword: theme,
+          category: 'theme' as const,
+          weight: 0.8,
+          usageCount: 1,
+          lastUsed: Date.now(),
+          source: 'ai-analysis' as const
+        };
+        this.updateKeywordPreference(themeKeyword, 'like');
+      });
+    }
+
+    if (analysis.colors && Array.isArray(analysis.colors)) {
+      this.preferences.extractedColors = [...new Set([...(this.preferences.extractedColors || []), ...analysis.colors])];
+      this.preferences.preferredColors = [...new Set([...(this.preferences.preferredColors || []), ...analysis.colors])];
+      
+      analysis.colors.forEach((color: string) => {
+        const colorKeyword = {
+          keyword: color,
+          category: 'color' as const,
+          weight: 0.8,
+          usageCount: 1,
+          lastUsed: Date.now(),
+          source: 'ai-analysis' as const
+        };
+        this.updateKeywordPreference(colorKeyword, 'like');
+      });
+    }
+
+    if (analysis.styles && Array.isArray(analysis.styles)) {
+      this.preferences.extractedStyles = [...new Set([...(this.preferences.extractedStyles || []), ...analysis.styles])];
+      this.preferences.preferredStyles = [...new Set([...(this.preferences.preferredStyles || []), ...analysis.styles])];
+      
+      analysis.styles.forEach((style: string) => {
+        const styleKeyword = {
+          keyword: style,
+          category: 'component-style' as const,
+          weight: 0.8,
+          usageCount: 1,
+          lastUsed: Date.now(),
+          source: 'ai-analysis' as const
+        };
+        this.updateKeywordPreference(styleKeyword, 'like');
+      });
+    }
+
+    if (analysis.keywords && Array.isArray(analysis.keywords)) {
+      this.preferences.extractedKeywords = [...new Set([...(this.preferences.extractedKeywords || []), ...analysis.keywords])];
+      
+      analysis.keywords.forEach((keyword: string) => {
+        const keywordStyle = {
+          keyword: keyword,
+          category: 'theme' as const,
+          weight: 0.7,
+          usageCount: 1,
+          lastUsed: Date.now(),
+          source: 'ai-analysis' as const
+        };
+        this.updateKeywordPreference(keywordStyle, 'like');
+      });
+    }
+
+    if (analysis.patterns && Array.isArray(analysis.patterns)) {
+      this.preferences.extractedPatterns = [...new Set([...(this.preferences.extractedPatterns || []), ...analysis.patterns])];
+      this.preferences.preferredPatterns = [...new Set([...(this.preferences.preferredPatterns || []), ...analysis.patterns])];
+      
+      analysis.patterns.forEach((pattern: string) => {
+        const patternKeyword = {
+          keyword: pattern,
+          category: 'pattern' as const,
+          weight: 0.8,
+          usageCount: 1,
+          lastUsed: Date.now(),
+          source: 'ai-analysis' as const
+        };
+        this.updateKeywordPreference(patternKeyword, 'like');
+      });
+    }
+
+    // Update component-specific preferences
+    if (analysis.preferences) {
+      this.updateComponentPreferences(componentType, analysis.preferences);
+    }
+
+    // Update analysis metadata
+    this.preferences.analysisCount = (this.preferences.analysisCount || 0) + 1;
+    this.preferences.lastAnalysis = new Date();
+    this.preferences.lastUpdated = Date.now();
   }
   
   /**

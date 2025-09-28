@@ -83,7 +83,7 @@ export default function TypographyPreview({ fontPairing, palette }: TypographyPr
                             fontSize: 'clamp(50px, 6vw, 70px)',
                             paddingBlock: '0.35em',
                     }}
-                > {fontPairing.primary.name} </h1>
+                > Primary </h1>
 
                 <p className="text-lg mb-4"
                    style={{ fontFamily: secondaryFontFamily,
@@ -91,7 +91,7 @@ export default function TypographyPreview({ fontPairing, palette }: TypographyPr
                             fontSize: 'clamp(38px, 3.2vw, 45px)',
                             paddingBlock: '0.35em',
                    }}
-                > {fontPairing.secondary.name} </p>
+                > Secondary </p>
 
             </div>
         </div>

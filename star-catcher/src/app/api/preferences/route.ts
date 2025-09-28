@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import getServerSession from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { auth } from '../auth/[...nextauth]/route';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+import UserPreferences from '@/models/UserPreferences';
 import { PreferenceLearner } from '@/lib/preferences/preferenceLearner';
 
 const PreferenceRequestSchema = z.object({
@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🔵 Preferences API Route: Received request');
     
-    const session = await getServerSession(authOptions);
-    if (!(session as any)?.user?.email) {
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       case 'get':
         console.log('🔵 Getting preferences...');
         
-        const user = await User.findOne({ email: (session as any).user.email });
+        const user = await User.findOne({ email: session.user.email });
         if (!user) {
           return NextResponse.json(
             { error: 'User not found' },
@@ -55,9 +55,13 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // Get preferences from UserPreferences collection
+        const userPreferences = await UserPreferences.findOne({ userId: session.user.email });
+        
         result = {
           success: true,
-          preferences: user.preferences || {
+          preferences: userPreferences || {
+            userId: session.user.email,
             styleKeywords: [],
             preferredColors: [],
             preferredThemes: [],
@@ -77,7 +81,7 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        let userForLearning = await User.findOne({ email: (session as any).user.email });
+        let userForLearning = await User.findOne({ email: session.user.email });
         if (!userForLearning) {
           return NextResponse.json(
             { error: 'User not found' },
@@ -86,18 +90,53 @@ export async function POST(request: NextRequest) {
         }
 
         // Create a preference learner instance
-        const learner = new PreferenceLearner((session as any).user.email);
+        const learner = new PreferenceLearner(session.user.email);
+        
+        // Initialize preferences if they don't exist
+        if (!userForLearning.preferences) {
+          userForLearning.preferences = {
+            styleKeywords: [] as any,
+            preferredColors: [],
+            preferredThemes: [] as any,
+            componentPreferences: new Map(),
+            lastUpdated: new Date()
+          };
+        }
         
         // Load existing preferences if they exist
         if (userForLearning.preferences) {
-          learner.setPreferences(userForLearning.preferences);
+          learner.setPreferences(JSON.parse(JSON.stringify(userForLearning.preferences)));
         }
         
         // Learn from the user input
         learner.learnFromInput(data.userInput, data.feedback);
         
         // Save updated preferences to database
-        userForLearning.preferences = learner.getPreferences();
+        const updatedPreferences = learner.getPreferences();
+        
+        // Clear and rebuild styleKeywords array
+        userForLearning.preferences.styleKeywords = [] as any;
+        updatedPreferences.styleKeywords.forEach(keyword => {
+          userForLearning.preferences!.styleKeywords.push({
+            keyword: keyword.keyword,
+            category: keyword.category as any,
+            weight: keyword.weight,
+            usageCount: keyword.usageCount,
+            lastUsed: new Date(keyword.lastUsed)
+          });
+        });
+        
+        userForLearning.preferences.preferredColors = updatedPreferences.preferredColors as any;
+        userForLearning.preferences.preferredThemes = updatedPreferences.preferredThemes as any;
+        
+        // Convert componentPreferences object to Map
+        const componentMap = new Map();
+        Object.entries(updatedPreferences.componentPreferences).forEach(([key, value]) => {
+          componentMap.set(key, value);
+        });
+        userForLearning.preferences.componentPreferences = componentMap;
+        
+        userForLearning.preferences.lastUpdated = new Date();
         await userForLearning.save();
 
         result = {
@@ -119,7 +158,7 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        let userForUpdate = await User.findOne({ email: (session as any).user.email });
+        let userForUpdate = await User.findOne({ email: session.user.email });
         if (!userForUpdate) {
           return NextResponse.json(
             { error: 'User not found' },
@@ -127,12 +166,33 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // Initialize preferences if they don't exist
+        if (!userForUpdate.preferences) {
+          userForUpdate.preferences = {
+            styleKeywords: [] as any,
+            preferredColors: [],
+            preferredThemes: [] as any,
+            componentPreferences: new Map(),
+            lastUpdated: new Date()
+          };
+        }
+        
         // Update preferences in database
-        userForUpdate.preferences = {
-          ...userForUpdate.preferences,
-          ...data.preferences,
-          lastUpdated: Date.now()
-        };
+        if (data.preferences) {
+          if (data.preferences.styleKeywords) {
+            userForUpdate.preferences.styleKeywords = data.preferences.styleKeywords as any;
+          }
+          if (data.preferences.preferredColors) {
+            userForUpdate.preferences.preferredColors = data.preferences.preferredColors;
+          }
+          if (data.preferences.preferredThemes) {
+            userForUpdate.preferences.preferredThemes = data.preferences.preferredThemes as any;
+          }
+          if (data.preferences.componentPreferences) {
+            userForUpdate.preferences.componentPreferences = data.preferences.componentPreferences as any;
+          }
+        }
+        userForUpdate.preferences.lastUpdated = new Date();
         await userForUpdate.save();
 
         result = {
@@ -145,7 +205,7 @@ export async function POST(request: NextRequest) {
       case 'clear':
         console.log('🔵 Clearing preferences...');
         
-        let userForClear = await User.findOne({ email: (session as any).user.email });
+        let userForClear = await User.findOne({ email: session.user.email });
         if (!userForClear) {
           return NextResponse.json(
             { error: 'User not found' },
@@ -154,13 +214,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Clear preferences in database
-        userForClear.preferences = {
-          styleKeywords: [],
-          preferredColors: [],
-          preferredThemes: [],
-          componentPreferences: {},
-          lastUpdated: Date.now()
-        };
+        userForClear.preferences!.styleKeywords = [] as any;
+        userForClear.preferences!.preferredColors = [];
+        userForClear.preferences!.preferredThemes = [] as any;
+        userForClear.preferences!.componentPreferences = new Map();
+        userForClear.preferences!.lastUpdated = new Date();
         await userForClear.save();
 
         result = {
@@ -179,7 +237,7 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        let userForThemes = await User.findOne({ email: (session as any).user.email });
+        let userForThemes = await User.findOne({ email: session.user.email });
         if (!userForThemes) {
           return NextResponse.json(
             { error: 'User not found' },
@@ -190,41 +248,42 @@ export async function POST(request: NextRequest) {
         // Initialize preferences if they don't exist
         if (!userForThemes.preferences) {
           userForThemes.preferences = {
-            styleKeywords: [],
+            styleKeywords: [] as any,
             preferredColors: [],
-            preferredThemes: [],
-            componentPreferences: {},
-            lastUpdated: Date.now()
+            preferredThemes: [] as any,
+            componentPreferences: new Map(),
+            lastUpdated: new Date()
           };
         }
 
         // Update themes, colors, styles, and keywords
-        if (data.themes) {
+        if (data.themes && userForThemes.preferences) {
           userForThemes.preferences.preferredThemes = [
             ...new Set([...userForThemes.preferences.preferredThemes, ...data.themes])
-          ];
+          ] as any;
         }
         
-        if (data.colors) {
+        if (data.colors && userForThemes.preferences) {
           userForThemes.preferences.preferredColors = [
             ...new Set([...userForThemes.preferences.preferredColors, ...data.colors])
           ];
         }
         
-        if (data.styles || data.keywords) {
+        if ((data.styles || data.keywords) && userForThemes.preferences) {
           // Add styles and keywords as style keywords
           const newKeywords = [
-            ...(data.styles || []).map(style => ({ keyword: style, category: 'component-style', weight: 0.7, usageCount: 1, lastUsed: Date.now() })),
-            ...(data.keywords || []).map(keyword => ({ keyword, category: 'theme', weight: 0.6, usageCount: 1, lastUsed: Date.now() }))
+            ...(data.styles || []).map(style => ({ keyword: style, category: 'component-style', weight: 0.7, usageCount: 1, lastUsed: new Date() })),
+            ...(data.keywords || []).map(keyword => ({ keyword, category: 'theme', weight: 0.6, usageCount: 1, lastUsed: new Date() }))
           ];
           
-          userForThemes.preferences.styleKeywords = [
-            ...userForThemes.preferences.styleKeywords,
-            ...newKeywords
-          ];
+          newKeywords.forEach(keyword => {
+            userForThemes.preferences!.styleKeywords.push(keyword as any);
+          });
         }
 
-        userForThemes.preferences.lastUpdated = Date.now();
+        if (userForThemes.preferences) {
+          userForThemes.preferences.lastUpdated = new Date();
+        }
         await userForThemes.save();
 
         result = {

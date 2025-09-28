@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkles, Wand2, Eye, Code, Layout, Navigation, Zap, CreditCard, Square, ArrowRight } from 'lucide-react';
+import { Sparkles, Wand2, Eye, Code, Layout, Navigation, Zap, CreditCard, Square, ArrowRight, Heart } from 'lucide-react';
 import ClientOnlyWrapper from '@/components/ClientOnlyWrapper';
 import Header from '@/components/ui/Header';
+import TopPreferences from '@/components/ui/TopPreferences';
+import { useSession } from 'next-auth/react';
 
 // Component navigation data
 const componentNavItems = [
@@ -191,10 +193,13 @@ const DynamicCardPreview = ({ code }: { code: string }) => {
 };
 
 function CardCustomizerContent() {
+  const { data: session } = useSession();
   const [customizationInput, setCustomizationInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [customizedCode, setCustomizedCode] = useState('');
   const [activeTab, setActiveTab] = useState<'preview' | 'source'>('preview');
+  const [userInputs, setUserInputs] = useState<string[]>([]);
+  const [isFavoriting, setIsFavoriting] = useState(false);
 
   // Default card template (iframe-safe)
   const defaultCardCode = `function Card() {
@@ -251,6 +256,9 @@ function CardCustomizerContent() {
       if (result.success && result.result.success) {
         setCustomizedCode(result.result.customizedCode);
         
+        // Track the user input
+        setUserInputs(prev => [...prev, customizationInput]);
+        
         // Clear the input
         setCustomizationInput('');
         
@@ -264,6 +272,53 @@ function CardCustomizerContent() {
       alert('Failed to customize card. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleFavorite = async () => {
+    if (!session?.user?.email) {
+      alert('Please sign in to save components');
+      return;
+    }
+
+    setIsFavoriting(true);
+    try {
+      const currentCode = customizedCode || defaultCardCode;
+      
+      const response = await fetch('/api/save/components', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          component: {
+            type: 'card',
+            name: 'Custom Card',
+            code: currentCode,
+            description: `Card customized with: ${userInputs.join(', ')}`
+          },
+          userInputs: userInputs
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save component');
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Component saved successfully! Check your Components tab in your account.');
+        // Reset the component to start fresh
+        setCustomizedCode('');
+        setUserInputs([]);
+      } else {
+        throw new Error('Failed to save component');
+      }
+    } catch (error) {
+      console.error('Error saving component:', error);
+      alert('Failed to save component. Please try again.');
+    } finally {
+      setIsFavoriting(false);
     }
   };
 
@@ -403,34 +458,50 @@ function CardCustomizerContent() {
                 />
               </div>
 
-              <button
-                onClick={handleCustomize}
-                disabled={isLoading || !customizationInput.trim()}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Customizing...
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="w-4 h-4" />
-                    Customize Card
-                  </>
+              <div className="space-y-3">
+                <button
+                  onClick={handleCustomize}
+                  disabled={isLoading || !customizationInput.trim()}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Customizing...
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="w-4 h-4" />
+                      Customize Card
+                    </>
+                  )}
+                </button>
+
+                {(customizedCode || userInputs.length > 0) && (
+                  <button
+                    onClick={handleFavorite}
+                    disabled={isFavoriting || !session?.user?.email}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-pink-500 text-white rounded-md hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isFavoriting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Heart className="w-4 h-4" />
+                        {session?.user?.email ? 'Save Component' : 'Sign in to Save'}
+                      </>
+                    )}
+                  </button>
                 )}
-              </button>
+              </div>
             </div>
 
             <div className="space-y-4">
-              <h4 className="text-sm font-medium text-blue-900">Try these examples:</h4>
-              <FloatingExamples examples={[
-                "Add an image at the top",
-                "Make it dark themed",
-                "Add more content sections",
-                "Make it a product card",
-                "Add hover effects"
-              ]} />
+              <h4 className="text-sm font-medium text-space-cadet font-outfit">Your Saved Preferences:</h4>
+              <TopPreferences />
             </div>
           </div>
         </div>

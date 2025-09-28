@@ -61,6 +61,7 @@ const onColorByLightness = (l: number, strong = false) =>
     l < (strong ? 58 : 62) ? "#FFFFFF" : "#000000";
 
 
+
 // --- add these helpers ---
 function relLuminanceFromHsl(h: number, s: number, l: number) {
     // reuse your hslToRgb
@@ -206,8 +207,17 @@ export function generateTrio(): ColorPalette {
     const secondaryHex = hslToHex(secondary.h, secondary.s, secondary.l);
 
     return {
-        primary:   { name: "Primary",   value: primaryHex,   contrast: onColorByLightness(primary.l) },
-        secondary: { name: "Secondary", value: secondaryHex, contrast: onColorByLightness(secondary.l, true) },
-        accent:    { name: "Accent",    value: accentHex,    contrast: onColorByLightness(accent.l) },
+        primary:   { 
+            value: primaryHex,   
+            contrast: onColorByLightness(primary.l) 
+        },
+        secondary: { 
+            value: secondaryHex, 
+            contrast: onColorByLightness(secondary.l, true) 
+        },
+        accent:    { 
+            value: accentHex,    
+            contrast: onColorByLightness(accent.l) 
+        },
     };
 }

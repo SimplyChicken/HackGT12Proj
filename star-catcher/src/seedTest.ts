@@ -8,17 +8,39 @@ dotenv.config({ path: ".env.local" });
 const ColorPairSchema = new mongoose.Schema(
   {
     case_id: { type: String, required: true },
+    // New format
+    primary: {
+      name: { type: String },
+      value: {
+        type: String,
+        match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
+      },
+      contrast: { type: String },
+    },
+    secondary: {
+      name: { type: String },
+      value: {
+        type: String,
+        match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
+      },
+      contrast: { type: String },
+    },
+    accent: {
+      name: { type: String },
+      value: {
+        type: String,
+        match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
+      },
+      contrast: { type: String },
+    },
+    // Old format (for backward compatibility)
     color: {
       type: String,
-      required: true,
       match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
-      default: "#FFFFFF",
     },
     color2: {
       type: String,
-      required: true,
       match: /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/,
-      default: "#000000",
     },
   },
   { _id: false }
@@ -27,8 +49,24 @@ const ColorPairSchema = new mongoose.Schema(
 const FontPairSchema = new mongoose.Schema(
   {
     case_id: { type: String, required: true },
-    font: { type: String, required: true, default: "Arial" },
-    font2: { type: String, required: true, default: "sans-serif" },
+    // New format
+    primary: {
+      name: { type: String },
+      googleFontUrl: { type: String },
+      weight: { type: String },
+      style: { type: String },
+      usage: { type: String },
+    },
+    secondary: {
+      name: { type: String },
+      googleFontUrl: { type: String },
+      weight: { type: String },
+      style: { type: String },
+      usage: { type: String },
+    },
+    // Old format (for backward compatibility)
+    font: { type: String },
+    font2: { type: String },
   },
   { _id: false }
 );
@@ -47,13 +85,55 @@ const User = mongoose.model("User", UserSchema);
 
 // ----------------- Merge Defaults -----------------
 const defaultColorPairs = [
-  { case_id: "default1", color: "#FF0000", color2: "#00FF00" },
-  { case_id: "default2", color: "#0000FF", color2: "#FFFF00" },
+  { 
+    case_id: "default1", 
+    primary: { name: "Primary Red", value: "#FF0000", contrast: "#FFFFFF" },
+    secondary: { name: "Secondary Green", value: "#00FF00", contrast: "#000000" },
+    accent: { name: "Accent Blue", value: "#0000FF", contrast: "#FFFFFF" }
+  },
+  { 
+    case_id: "default2", 
+    primary: { name: "Primary Blue", value: "#0000FF", contrast: "#FFFFFF" },
+    secondary: { name: "Secondary Yellow", value: "#FFFF00", contrast: "#000000" },
+    accent: { name: "Accent Red", value: "#FF0000", contrast: "#FFFFFF" }
+  },
 ];
 
 const defaultFontPairs = [
-  { case_id: "default1", font: "Arial", font2: "Helvetica" },
-  { case_id: "default2", font: "Times New Roman", font2: "Courier" },
+  { 
+    case_id: "default1", 
+    primary: { 
+      name: "Arial", 
+      googleFontUrl: "https://fonts.googleapis.com/css2?family=Arial:wght@400&display=swap",
+      weight: "400",
+      style: "normal",
+      usage: "Use for headings and titles"
+    },
+    secondary: { 
+      name: "Helvetica", 
+      googleFontUrl: "https://fonts.googleapis.com/css2?family=Helvetica:wght@400&display=swap",
+      weight: "400",
+      style: "normal",
+      usage: "Use for body text and supporting content"
+    }
+  },
+  { 
+    case_id: "default2", 
+    primary: { 
+      name: "Times New Roman", 
+      googleFontUrl: "https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400&display=swap",
+      weight: "400",
+      style: "normal",
+      usage: "Use for headings and titles"
+    },
+    secondary: { 
+      name: "Courier", 
+      googleFontUrl: "https://fonts.googleapis.com/css2?family=Courier:wght@400&display=swap",
+      weight: "400",
+      style: "normal",
+      usage: "Use for body text and supporting content"
+    }
+  },
 ];
 
 async function updateDefaults() {
