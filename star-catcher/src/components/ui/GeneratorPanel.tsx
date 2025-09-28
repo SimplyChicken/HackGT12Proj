@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FontPairing, ColorPalette, Component, MemoryItem } from '@/lib/schemas';
 import { memorySystem } from '@/lib/memory';
 import TypographyPreview from './TypographyPreview';
-// import PalettePreview from './PalettePreview';
 import PreviewCanvas from './PreviewCanvas';
 import LikeBar from './LikeBar';
 import { Palette, Type, Component as ComponentIcon, Unlock, Lock} from 'lucide-react';
@@ -50,7 +49,8 @@ export default function GeneratorPanel({
     { id: 'components' as TabType, label: 'Components', icon: ComponentIcon },
   ];
 
-  const generateDesign = useCallback(async (type: TabType, options: any = {}) => {
+
+    const generateDesign = useCallback(async (type: TabType, options: any = {}) => {
     setIsLoading(true);
     setError(null);
 
@@ -117,27 +117,52 @@ export default function GeneratorPanel({
     }
   }, [currentFont, currentPalette, currentComponent]);
 
-  const handleDislike = useCallback((type: TabType) => {
-    let currentData: any = null;
-    
-    if (type === 'fonts' && currentFont) {
-      currentData = currentFont;
-    } else if (type === 'colors' && currentPalette) {
-      currentData = currentPalette;
-    } else if (type === 'components' && currentComponent) {
-      currentData = currentComponent;
-    }
+    const buildOptions = useCallback(() => {
+        if (activeTab !== 'fonts') return {};
+        return {
+            primaryCategories,
+            secondaryCategories,
+            ...(currentFont && (lockPrimary || lockSecondary)
+                ? {
+                    locked: {
+                        ...(lockPrimary ? {
+                            primaryName: currentFont.primary.name,
+                            primaryWeight: currentFont.primary.weight,
+                        } : {}),
+                        ...(lockSecondary ? {
+                            secondaryName: currentFont.secondary.name,
+                            secondaryWeight: currentFont.secondary.weight,
+                        } : {}),
+                    }
+                }
+                : {}),
+        };
+    }, [activeTab, primaryCategories, secondaryCategories, currentFont, lockPrimary, lockSecondary]);
 
-    if (currentData) {
-      const memory = memorySystem.createMemoryFromData(
-        type === 'fonts' ? 'font' : type === 'colors' ? 'color' : 'component',
-        currentData
-      );
-      const feedback = memorySystem.createFeedbackFromMemory(memory, 'dislike');
-      memorySystem.saveMemory(memory);
-      memorySystem.saveFeedback(feedback);
-    }
-  }, [currentFont, currentPalette, currentComponent]);
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            // Ignore when typing in fields/buttons/links
+            const t = e.target as HTMLElement | null;
+            const tag = t?.tagName;
+            const isTyping =
+                t?.isContentEditable ||
+                tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+            if (isTyping) return;
+
+            // Space = generate
+            if (e.code === 'Space') {
+                e.preventDefault(); // stop page from scrolling
+                if (!isLoading) {
+                    generateDesign(activeTab, buildOptions()); // ← same call as your button
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [isLoading, activeTab, generateDesign, buildOptions]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -165,6 +190,7 @@ export default function GeneratorPanel({
                               </button>
                               </div>
 
+
                               <div className="flex flex-wrap gap-4">
                                   {ALL_CATEGORIES.map((cat) => (
                                       <label
@@ -176,6 +202,7 @@ export default function GeneratorPanel({
                                               className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
                                               checked={primaryCategories.includes(cat)}
                                               onChange={() => setPrimaryCategories((c) => toggleIn(c, cat))}
+                                              disabled={lockPrimary}
                                           />
                                           <span className="capitalize">{cat.replace('-', ' ')}</span>
                                       </label>
@@ -208,6 +235,7 @@ export default function GeneratorPanel({
                                               className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
                                               checked={secondaryCategories.includes(cat)}
                                               onChange={() => setSecondaryCategories((c) => toggleIn(c, cat))}
+                                              disabled={lockSecondary}
                                           />
                                           <span className="capitalize">{cat.replace('-', ' ')}</span>
                                       </label>
@@ -222,7 +250,6 @@ export default function GeneratorPanel({
             {currentFont && (
               <LikeBar
                 onLike={() => handleLike('fonts')}
-                onDislike={() => handleDislike('fonts')}
               />
             )}
           </div>
@@ -237,7 +264,6 @@ export default function GeneratorPanel({
             {currentPalette && (
               <LikeBar
                 onLike={() => handleLike('colors')}
-                onDislike={() => handleDislike('colors')}
               />
             )}
           </div>
@@ -249,7 +275,6 @@ export default function GeneratorPanel({
             {currentComponent && (
               <LikeBar
                 onLike={() => handleLike('components')}
-                onDislike={() => handleDislike('components')}
               />
             )}
           </div>
@@ -295,12 +320,7 @@ export default function GeneratorPanel({
         {/* Generate Button */}
         <div className="mb-6">
           <button
-            onClick={() => generateDesign(
-                activeTab,
-                activeTab === 'fonts'
-                    ? { primaryCategories, secondaryCategories }
-                    : {}
-            )}
+            onClick={() => generateDesign(activeTab, buildOptions())}
             disabled={isLoading ||
                 (activeTab === 'fonts' &&
                     (primaryCategories.length === 0 || secondaryCategories.length === 0))

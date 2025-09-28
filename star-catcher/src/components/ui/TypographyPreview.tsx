@@ -57,23 +57,23 @@ export default function TypographyPreview({ fontPairing }: TypographyPreviewProp
   return (
     <div className="space-y-6">
       {/* Font Information */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold mb-3">Font Pairing Details</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h4 className="font-medium text-gray-700 mb-2">Primary Font</h4>
-            <p className="text-sm text-gray-600">
-              <strong>{fontPairing.primary.name}</strong> ({fontPairing.primary.weight})
-            </p>
-          </div>
-          <div>
-            <h4 className="font-medium text-gray-700 mb-2">Secondary Font</h4>
-            <p className="text-sm text-gray-600">
-              <strong>{fontPairing.secondary.name}</strong> ({fontPairing.secondary.weight})
-            </p>
-          </div>
-        </div>
-      </div>
+      {/*<div className="bg-gray-50 p-4 rounded-lg">*/}
+      {/*  <h3 className="text-lg font-semibold mb-3">Font Pairing Details</h3>*/}
+      {/*  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">*/}
+      {/*    <div>*/}
+      {/*      <h4 className="font-medium text-gray-700 mb-2">Primary Font</h4>*/}
+      {/*      <p className="text-sm text-gray-600">*/}
+      {/*        <strong>{fontPairing.primary.name}</strong> ({fontPairing.primary.weight})*/}
+      {/*      </p>*/}
+      {/*    </div>*/}
+      {/*    <div>*/}
+      {/*      <h4 className="font-medium text-gray-700 mb-2">Secondary Font</h4>*/}
+      {/*      <p className="text-sm text-gray-600">*/}
+      {/*        <strong>{fontPairing.secondary.name}</strong> ({fontPairing.secondary.weight})*/}
+      {/*      </p>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
 
       {/* Typography Preview */}
       <div className="border border-gray-200 text-center rounded-lg p-6 bg-white">
@@ -84,7 +84,7 @@ export default function TypographyPreview({ fontPairing }: TypographyPreviewProp
             className="text-4xl font-bold mb-2"
             style={{ fontFamily: primaryFontFamily }}
           >
-            Main Heading
+              {fontPairing.primary.name}
           </h1>
         </div>
 
@@ -94,7 +94,7 @@ export default function TypographyPreview({ fontPairing }: TypographyPreviewProp
             className="text-lg mb-4"
             style={{ fontFamily: secondaryFontFamily }}
           >
-            This is a larger body text example using the secondary font. It demonstrates how the font pairing works for reading longer content and provides good readability for articles and descriptions.
+              {fontPairing.secondary.name}
           </p>
         </div>
       </div>

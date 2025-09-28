@@ -22,7 +22,8 @@ export async function POST(request: NextRequest) {
         result = await generateFontPairings({
           purpose: options.purpose || 'website',
           primaryCategories: options.primaryCategories || ['serif', 'sans-serif'],
-          secondaryCategories: options.secondaryCategories || ['serif', 'sans-serif']
+          secondaryCategories: options.secondaryCategories || ['serif', 'sans-serif'],
+            ...options,
         });
         break;
         
