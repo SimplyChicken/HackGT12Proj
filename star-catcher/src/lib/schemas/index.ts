@@ -108,6 +108,27 @@ export const FeedbackSchema = z.object({
 export type MemoryItem = z.infer<typeof MemoryItemSchema>;
 export type Feedback = z.infer<typeof FeedbackSchema>;
 
+// User Style Preferences Schema
+export const StyleKeywordSchema = z.object({
+  keyword: z.string(),
+  category: z.enum(['color', 'layout', 'typography', 'spacing', 'animation', 'theme', 'component-style']),
+  weight: z.number().min(0).max(1).default(0.5), // How much user likes this keyword
+  usageCount: z.number().default(1),
+  lastUsed: z.number().default(() => Date.now()),
+});
+
+export const UserPreferencesSchema = z.object({
+  userId: z.string(),
+  styleKeywords: z.array(StyleKeywordSchema).default([]),
+  preferredColors: z.array(z.string()).default([]),
+  preferredThemes: z.array(z.enum(['modern', 'minimal', 'bold', 'elegant', 'playful', 'corporate', 'creative'])).default([]),
+  componentPreferences: z.record(z.any()).default({}), // Component-specific preferences
+  lastUpdated: z.number().default(() => Date.now()),
+});
+
+export type StyleKeyword = z.infer<typeof StyleKeywordSchema>;
+export type UserPreferences = z.infer<typeof UserPreferencesSchema>;
+
 // API Response Schema
 export const DesignResponseSchema = z.object({
   type: z.enum(['font', 'color', 'component']),

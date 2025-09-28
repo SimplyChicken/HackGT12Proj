@@ -1,12 +1,18 @@
-import { MemoryItem, Feedback, MemoryItemSchema, FeedbackSchema } from './schemas';
+import { MemoryItem, Feedback, MemoryItemSchema, FeedbackSchema, UserPreferences } from './schemas';
+import { PreferenceLearner } from './preferences/preferenceLearner';
 
 const MEMORY_STORAGE_KEY = 'design-memories';
 const FEEDBACK_STORAGE_KEY = 'design-feedback';
+const PREFERENCES_STORAGE_KEY = 'user-preferences';
 
 export class MemorySystem {
   private static instance: MemorySystem;
+  private preferenceLearner: PreferenceLearner;
   
-  private constructor() {}
+  private constructor() {
+    this.preferenceLearner = new PreferenceLearner('anonymous');
+    this.loadPreferences();
+  }
   
   public static getInstance(): MemorySystem {
     if (!MemorySystem.instance) {
@@ -135,6 +141,61 @@ export class MemorySystem {
       data: memory.data,
       timestamp: Date.now(),
     };
+  }
+
+  // Enhanced Preference Learning Methods
+  public learnFromUserInput(userInput: string, feedback?: 'like' | 'dislike'): void {
+    this.preferenceLearner.learnFromInput(userInput, feedback);
+    this.savePreferences();
+  }
+
+  public getPreferencesForPrompt(): string {
+    return this.preferenceLearner.getPreferencesForPrompt();
+  }
+
+  public getComponentPreferences(componentType: string): any {
+    return this.preferenceLearner.getComponentPreferences(componentType);
+  }
+
+  public getTopPreferences(category: string, limit: number = 5): any[] {
+    return this.preferenceLearner.getTopPreferences(category, limit);
+  }
+
+  // Preference Storage Methods
+  private savePreferences(): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const preferences = this.preferenceLearner.getPreferences();
+      localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences));
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+    }
+  }
+
+  private loadPreferences(): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const stored = localStorage.getItem(PREFERENCES_STORAGE_KEY);
+      if (stored) {
+        const preferences = JSON.parse(stored);
+        this.preferenceLearner.setPreferences(preferences);
+      }
+    } catch (error) {
+      console.error('Error loading preferences:', error);
+    }
+  }
+
+  public updatePreferences(newPreferences: Partial<UserPreferences>): void {
+    this.preferenceLearner.mergePreferences(newPreferences);
+    this.savePreferences();
+  }
+
+  public clearPreferences(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(PREFERENCES_STORAGE_KEY);
+    this.preferenceLearner = new PreferenceLearner('anonymous');
   }
 }
 

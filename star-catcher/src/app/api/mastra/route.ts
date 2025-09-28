@@ -13,6 +13,7 @@ const RequestSchema = z.object({
     userInput: z.string().optional(),
     preferences: z.record(z.any()).optional(),
     message: z.string().optional(),
+    componentType: z.enum(['button', 'navbar', 'hero', 'card', 'footer']).optional(),
   }),
 });
 
@@ -51,26 +52,83 @@ export async function POST(request: NextRequest) {
         console.log('🔵 Calling Mastra agent...');
         console.log('🔵 MASTRA FRAMEWORK: Loading componentAgent from Mastra server...');
         
-        // Use the existing generateComponent function directly
-        const { generateComponent } = await import('@/lib/tools/generateComponent');
-        console.log('🔵 Using generateComponent function directly');
+        // Import the Mastra server to get the component agent
+        const { componentAgent } = await import('@/lib/mastra/server');
+        console.log('🔵 Using Mastra componentAgent');
         
-        // Call the generateComponent function
-        const componentResult = await generateComponent({
-          componentType: 'button',
-          userInput: data.userInput,
-          preferences: data.preferences,
-          baseCode: data.baseCode
-        });
-        
-        const agentResult = {
-          text: componentResult.code,
-          success: true
-        };
+        // Create a prompt for the agent to customize the component
+        const prompt = `Customize this ${data.componentType || 'button'} component based on the user's requirements.
+
+Base Component Code:
+\`\`\`javascript
+${data.baseCode}
+\`\`\`
+
+User Requirements: "${data.userInput}"
+
+User Preferences: ${JSON.stringify(data.preferences || {}, null, 2)}
+
+CRITICAL IFRAME COMPATIBILITY REQUIREMENTS - MUST FOLLOW ALL RULES:
+This component will run in an iframe environment with React UMD + Babel standalone. You MUST ensure compatibility:
+
+1. CODE FORMAT:
+   - Use plain JavaScript with JSX, NOT TypeScript
+   - NO type annotations, interfaces, or TypeScript syntax
+   - NO "as" type assertions or generics
+   - NO import/export statements - use plain function declarations
+
+2. COMPONENT STRUCTURE:
+   - Must be a plain function component: function Navbar() { ... }
+   - NO export default or export statements
+   - NO import statements (React hooks are available globally)
+   - Use React hooks directly: const [state, setState] = useState(false)
+
+3. STYLING:
+   - Use Tailwind CSS classes only
+   - NO CSS modules, SCSS, or styled-components
+   - Use inline style={{}} if needed for dynamic styles
+
+4. ICONS:
+   - Use inline SVG elements instead of icon libraries
+   - NO external icon imports (lucide-react, etc.)
+   - Example: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">...</svg>
+
+5. REACT FEATURES:
+   - useState, useEffect, and other React hooks are allowed
+   - Event handlers (onClick, onChange) are allowed
+   - Conditional rendering with && and ternary operators is allowed
+   - Use <a> tags instead of Next.js <Link>
+   - Use <img src="https://..."> with full URLs for images
+
+6. EXAMPLES OF CORRECT FORMAT:
+   function Navbar() {
+     const [isOpen, setIsOpen] = useState(false);
+     return (
+       <nav className="bg-white shadow-sm">
+         <button onClick={() => setIsOpen(!isOpen)}>
+           <svg className="w-6 h-6">...</svg>
+         </button>
+       </nav>
+     );
+   }
+
+CRITICAL STRUCTURE PRESERVATION RULES - MUST FOLLOW:
+- KEEP the exact same function structure: function Navbar() { return (...) }
+- KEEP the exact same JSX structure: <nav><div><div>...</div></div></nav>
+- DO NOT include any mounting code (createRoot, render) - the iframe handles mounting
+- ONLY modify colors, text content, styling classes, and simple content
+- DO NOT add mobile menus, state management, or complex functionality
+- DO NOT change the overall layout or component hierarchy
+- ONLY customize what the user specifically requests (colors, text, styling)
+
+Please analyze the base code and user requirements, then return the complete customized React component code that fully implements the user's request while preserving the exact structure above. Return only the React component code without explanations, following ALL the iframe compatibility and structure preservation rules above.`;
+
+        // Call the Mastra agent using generateVNext for V2 model support
+        const agentResult = await componentAgent.generateVNext(prompt);
         
         console.log('🔵 Agent result:', JSON.stringify(agentResult, null, 2));
 
-        // Extract the customized code from the agent's text response
+        // Extract the customized code from the agent's response
         if (agentResult.text) {
           let customizedCode = agentResult.text.trim();
           // Clean up the response to ensure it's valid React code
@@ -79,9 +137,9 @@ export async function POST(request: NextRequest) {
           result = {
             success: true,
             customizedCode,
-            description: `Customized button based on: "${data.userInput}"`,
+            description: `Customized ${data.componentType || 'button'} based on: "${data.userInput}"`,
             features: [
-              'AI-powered customization via generateComponent',
+              'AI-powered customization via Mastra agent',
               'Tailwind CSS styling',
               'Dynamic user requirements',
               'Production ready'
@@ -91,7 +149,7 @@ export async function POST(request: NextRequest) {
         } else {
           result = {
             success: false,
-            error: 'No code generated from generateComponent function'
+            error: 'No code generated from Mastra agent'
           };
         }
         break;

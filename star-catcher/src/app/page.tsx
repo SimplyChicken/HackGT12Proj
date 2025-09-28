@@ -46,26 +46,26 @@ export default function Home() {
 
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Button Customizer */}
-          <Link href="/button" className="group">
+          {/* Component Generator */}
+          <Link href="/components" className="group">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                   <Wand2 className="w-6 h-6 text-blue-600" />
             </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Button Customizer</h3>
-                  <p className="text-gray-600">AI-powered button generation</p>
+                  <h3 className="text-xl font-semibold text-gray-900">Component Generator</h3>
+                  <p className="text-gray-600">AI-powered component generation</p>
                 </div>
               </div>
               <p className="text-gray-600 mb-6">
-                Start with a simple button and customize it with natural language. 
-                Watch as AI transforms your ideas into beautiful, functional components.
+                Generate and customize various React components with natural language. 
+                Choose from buttons, navbars, heroes, cards, and footers.
               </p>
               <div className="space-y-2 text-sm text-gray-500">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>Natural language customization</span>
+                  <span>Multiple component types</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>

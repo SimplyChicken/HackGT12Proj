@@ -4,45 +4,49 @@ import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { generateComponent } from "../tools/generateComponent";
 import { generateFontPairings } from "../tools/generateFontPairings";
+import { memorySystem } from "../memory";
 
 // Tool schema for Mastra
 const customizeComponentToolSchema = z.object({
   baseCode: z.string().describe('The base component code to customize'),
   userInput: z.string().describe('User requirements for customization'),
-  preferences: z.record(z.any()).optional().describe('User preferences for styling and features')
+  preferences: z.record(z.any()).optional().describe('User preferences for styling and features'),
+  componentType: z.enum(['button', 'navbar', 'hero', 'card', 'footer']).optional().describe('The type of component to customize')
 });
 
 // Tool for customizing component code using AI
 const customizeComponentTool = {
   name: 'customizeComponent',
   description: 'Customize a React component based on user requirements using AI analysis',
-  parameters: {
-    type: 'object',
-    properties: {
-      baseCode: {
-        type: 'string',
-        description: 'The base component code to customize'
-      },
-      userInput: {
-        type: 'string',
-        description: 'User requirements for customization'
-      },
-      preferences: {
-        type: 'object',
-        description: 'User preferences for styling and features'
-      }
-    },
-    required: ['baseCode', 'userInput']
-  },
-  execute: async ({ baseCode, userInput, preferences }: any) => {
+  parameters: customizeComponentToolSchema,
+  execute: async ({ baseCode, userInput, preferences, componentType }: {
+    baseCode: string;
+    userInput: string;
+    preferences?: any;
+    componentType?: 'button' | 'navbar' | 'hero' | 'card' | 'footer';
+  }) => {
     try {
-      console.log('🟡 CustomizeComponent tool executing with:', { baseCode, userInput, preferences });
+      console.log('🟡 CustomizeComponent tool executing with:', { baseCode, userInput, preferences, componentType });
       
-      // Use the existing generateComponent function with user input and base code
+      // Learn from user input to improve future recommendations
+      memorySystem.learnFromUserInput(userInput);
+      
+      // Get learned preferences for this component type
+      const learnedPreferences = memorySystem.getComponentPreferences(componentType || 'button');
+      
+      // Merge with provided preferences (provided preferences take precedence)
+      const enhancedPreferences = {
+        ...learnedPreferences,
+        ...preferences,
+        // Add learned style keywords to the prompt
+        learnedKeywords: memorySystem.getPreferencesForPrompt()
+      };
+      
+      // Use the existing generateComponent function with enhanced preferences
       const result = await generateComponent({
-        componentType: 'button',
+        componentType: componentType || 'button',
         userInput,
-        preferences,
+        preferences: enhancedPreferences,
         baseCode // Pass the base code to the generator
       });
       
@@ -52,7 +56,8 @@ const customizeComponentTool = {
         success: true,
         customizedCode: result.code,
         description: result.description,
-        features: result.features
+        features: result.features,
+        learnedPreferences: learnedPreferences
       };
     } catch (error) {
       console.error('🟡 CustomizeComponent tool error:', error);
@@ -62,7 +67,7 @@ const customizeComponentTool = {
       };
     }
   }
-};
+} as const;
 
 // Tool for generating font pairings
 const generateFontPairingsTool = {
@@ -126,23 +131,61 @@ const componentAgent = new Agent({
 
     Your role:
     - Execute any user request, no matter how complex or unusual
-    - Transform button components based on natural language instructions
+    - Transform React components (buttons, navbars, heroes, cards, footers) based on natural language instructions
     - Implement any styling, functionality, or behavior requested
     - Use Tailwind CSS for styling
     - Maintain clean, production-ready React code
 
+    CRITICAL COMPATIBILITY REQUIREMENTS - MUST FOLLOW ALL RULES:
+    This component will run in an iframe environment with ES modules and import maps. You MUST ensure compatibility:
+
+    1. CODE FORMAT:
+       - Use plain JavaScript with JSX, NOT TypeScript
+       - NO type annotations, interfaces, or TypeScript syntax
+       - NO "as" type assertions or generics
+
+    2. IMPORTS - ONLY USE THESE ALLOWED IMPORTS:
+       - "react" (for useState, useEffect, etc.)
+       - "react-dom/client" (only if you need createRoot)
+       - "lucide-react" (for icons like Menu, X, Search, etc.)
+       - "@radix-ui/react-*" (optional, for advanced components)
+       - NO Next.js imports (next/link, next/image, etc.)
+       - NO relative imports (./file, ../file)
+       - NO @/ imports
+
+    3. COMPONENT STRUCTURE:
+       - Must be a self-contained ES module
+       - Export as: export default function ComponentName() { ... }
+       - Use <a> tags instead of Next.js <Link>
+       - Use <img src="https://..."> with full URLs for images
+
+    4. STYLING:
+       - Use Tailwind CSS classes only
+       - NO CSS modules, SCSS, or styled-components
+       - Use inline style={{}} if needed for dynamic styles
+
+    5. ICONS:
+       - Use lucide-react imports: import { Menu, X, Search } from "lucide-react"
+       - NO other icon libraries
+
+    6. REACT FEATURES:
+       - useState, useEffect, and other React hooks are allowed
+       - Event handlers (onClick, onChange) are allowed
+       - Conditional rendering with && and ternary operators is allowed
+
     Guidelines:
-    - Always start with the provided base button code
+    - Always start with the provided base component code
     - Implement exactly what the user asks for, without simplification
     - Use proper React patterns and hooks when needed
     - Apply Tailwind CSS classes for all styling
     - Add any necessary imports (React hooks, icons, libraries)
     - Handle complex requirements like animations, state management, interactions
     - Support any level of customization complexity
+    - Ensure ES module compatibility at all times
     
-    When asked to customize a component, return the complete customized React component code that fully implements the user's request.
+    When asked to customize a component, analyze the base code and user requirements, then return the complete customized React component code that fully implements the user's request. Return only the React component code without explanations.
   `,
-  model: openai("gpt-3.5-turbo"),
+  model: openai("gpt-4o-mini"),
 });
 
 console.log('🟢 Component Agent created successfully');
@@ -171,7 +214,7 @@ const designAgent = new Agent({
     
     When generating designs, use the appropriate tools and return structured, validated results.
   `,
-  model: openai("gpt-3.5-turbo"),
+  model: openai("gpt-4o-mini"),
 });
 
 console.log('🟢 Design Agent created successfully');
@@ -232,7 +275,7 @@ export class DesignAgentWrapper {
           throw new Error(`Unknown generation type: ${type}`);
       }
 
-      const response = await this.agent.generate(prompt);
+      const response = await this.agent.generateVNext(prompt);
       
       // For font generation, we need to extract the result from the tool call
       if (type === 'font') {
