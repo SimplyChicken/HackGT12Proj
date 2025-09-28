@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poly, Outfit } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers"; // 👈 your SessionProvider wrapper
 
 // Fonts
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poly = Poly({
+  variable: "--font-poly",
   subsets: ["latin"],
+  weight: "400",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 // Metadata
@@ -30,7 +32,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gray-50`}
+        className={`${poly.variable} ${outfit.variable} antialiased min-h-screen`}
+        style={{ backgroundColor: '#F0EAD6' }}
       >
         <Providers>
           {children}

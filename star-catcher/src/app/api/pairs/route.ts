@@ -1,14 +1,14 @@
-export const runtime = "node";
-
+export const config = {
+  runtime: "node",
+}
 import { NextRequest, NextResponse } from "next/server";
 import User from "../../../models/User";
 import dbConnect from "../../../lib/dbConnect";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { auth } from "../auth/[...nextauth]/route";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
