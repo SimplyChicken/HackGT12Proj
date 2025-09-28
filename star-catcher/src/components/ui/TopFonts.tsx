@@ -128,11 +128,14 @@ const TopFonts = () => {
     }
 
     // Convert saved font pairs to display format
-    const pairings: FontPairing[] = fontPairs.slice(-3).map((pair, index) => ({
-      heading: pair.primary.name,
-      body: pair.secondary.name,
-      name: `Saved ${index + 1}`
-    }));
+    const pairings: FontPairing[] = fontPairs
+      .filter(pair => pair && (pair.primary || pair.secondary)) // Filter out invalid pairs
+      .slice(-3)
+      .map((pair, index) => ({
+        heading: pair.primary?.name || 'Unknown Font',
+        body: pair.secondary?.name || 'Unknown Font',
+        name: `Saved ${index + 1}`
+      }));
 
     return pairings;
   }, [fontPairs]);

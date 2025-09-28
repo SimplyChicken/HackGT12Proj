@@ -38,8 +38,8 @@ export default function TypographyPreview({ fontPairing, palette }: TypographyPr
         document.head.appendChild(secondaryLink);
 
         await Promise.all([
-          document.fonts.load(`${fontPairing.primary.weight}px ${fontPairing.primary.name}`),
-          document.fonts.load(`${fontPairing.secondary.weight}px ${fontPairing.secondary.name}`),
+          document.fonts.load(`${fontPairing.primary?.weight || 400}px ${fontPairing.primary?.name || 'Arial'}`),
+          document.fonts.load(`${fontPairing.secondary?.weight || 400}px ${fontPairing.secondary?.name || 'Arial'}`),
         ]);
 
         setFontsLoaded(true);
@@ -60,8 +60,8 @@ export default function TypographyPreview({ fontPairing, palette }: TypographyPr
     );
   }
 
-  const primaryFontFamily = `"${fontPairing.primary.name}", sans-serif`;
-  const secondaryFontFamily = `"${fontPairing.secondary.name}", sans-serif`;
+  const primaryFontFamily = `"${fontPairing.primary?.name || 'Arial'}", sans-serif`;
+  const secondaryFontFamily = `"${fontPairing.secondary?.name || 'Arial'}", sans-serif`;
 
   return (
     <div className="space-y-6">
@@ -83,7 +83,7 @@ export default function TypographyPreview({ fontPairing, palette }: TypographyPr
                             fontSize: 'clamp(50px, 6vw, 70px)',
                             paddingBlock: '0.35em',
                     }}
-                > {fontPairing.primary.name} </h1>
+                > {fontPairing.primary?.name || 'Primary Font'} </h1>
 
                 <p className="text-lg mb-4"
                    style={{ fontFamily: secondaryFontFamily,
@@ -91,7 +91,7 @@ export default function TypographyPreview({ fontPairing, palette }: TypographyPr
                             fontSize: 'clamp(38px, 3.2vw, 45px)',
                             paddingBlock: '0.35em',
                    }}
-                > {fontPairing.secondary.name} </p>
+                > {fontPairing.secondary?.name || 'Secondary Font'} </p>
 
             </div>
         </div>

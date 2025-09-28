@@ -92,8 +92,8 @@ export default function GeneratorPanel({
     ...(currentFont && (lockPrimaryFont || lockSecondaryFont)
       ? {
           locked: {
-            ...(lockPrimaryFont ? { primaryName: currentFont.primary.name, primaryWeight: currentFont.primary.weight } : {}),
-            ...(lockSecondaryFont ? { secondaryName: currentFont.secondary.name, secondaryWeight: currentFont.secondary.weight } : {}),
+            ...(lockPrimaryFont ? { primaryName: currentFont.primary?.name, primaryWeight: currentFont.primary?.weight } : {}),
+            ...(lockSecondaryFont ? { secondaryName: currentFont.secondary?.name, secondaryWeight: currentFont.secondary?.weight } : {}),
           }
         }
       : {}),
