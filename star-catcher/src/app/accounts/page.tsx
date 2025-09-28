@@ -123,7 +123,7 @@ export default function AccountsPage() {
         const res = await fetch(`/api/save/colors?case_id=${caseId}`, {
           method: 'DELETE',
         });
-        
+
         if (res.ok) {
           setColorPairs(prev => prev.filter(pair => pair.case_id !== caseId));
         } else {
@@ -133,7 +133,7 @@ export default function AccountsPage() {
         const res = await fetch(`/api/save/fonts?case_id=${caseId}`, {
           method: 'DELETE',
         });
-        
+
         if (res.ok) {
           setFontPairs(prev => prev.filter(pair => pair.case_id !== caseId));
         } else {
@@ -143,7 +143,7 @@ export default function AccountsPage() {
         const res = await fetch(`/api/save/combos?case_id=${caseId}`, {
           method: 'DELETE',
         });
-        
+
         if (res.ok) {
           setCombos(prev => prev.filter(combo => combo.case_id !== caseId));
         } else {
@@ -239,6 +239,14 @@ export default function AccountsPage() {
               </div>
             </div>
 
+          <div className="max-w-6xl mx-auto px-6 py-8">
+              <div className="flex items-center justify-between mb-6">
+                  <div>
+                      <div className="text-3xl font-medium text-ink font-poly">
+                          Welcome Back Your Inspiration
+                      </div>
+                  </div>
+
             <div>
               <button
                 onClick={() => signOut()}
@@ -248,6 +256,24 @@ export default function AccountsPage() {
               </button>
             </div>
           </div>
+                  <div className="flex flex-col items-end space-y-1">
+                      {/* "signed in as" message */}
+                      <span className="text-xs text-ink/70 font-outfit">
+        Signed in as {session.user?.email}. Sign out?
+      </span>
+
+                      {/* themed button */}
+                      <button
+                          onClick={() => signOut()}
+                          className="inline-flex items-center px-4 py-2 rounded-lg
+                   bg-accent text-sm font-outfit text-white
+                   transition-colors shadow-sm"
+                      >
+                          Sign out
+                      </button>
+                  </div>
+              </div>
+
 
           <div className="mt-6">
             {/* Tab buttons */}
@@ -282,21 +308,21 @@ export default function AccountsPage() {
               >
                 Combos
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab("components")}
                 className={`px-4 py-2 rounded-md font-outfit font-medium transition-colors ${
-                  activeTab === "components" 
-                    ? "bg-space-cadet text-white" 
+                  activeTab === "components"
+                    ? "bg-space-cadet text-white"
                     : "bg-white text-slate-gray hover:bg-slate-gray/10 border border-slate-gray/20"
                 }`}
               >
                 Components
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab("preferences")}
                 className={`px-4 py-2 rounded-md font-outfit font-medium transition-colors ${
-                  activeTab === "preferences" 
-                    ? "bg-space-cadet text-white" 
+                  activeTab === "preferences"
+                    ? "bg-space-cadet text-white"
                     : "bg-white text-slate-gray hover:bg-slate-gray/10 border border-slate-gray/20"
                 }`}
               >
@@ -352,7 +378,7 @@ export default function AccountsPage() {
             {activeTab === "components" && (
               <div className="space-y-6">
                 <div className="text-gray-700 mb-4">Your saved components:</div>
-                
+
                 {savedComponents.length > 0 ? (
                   <div className="space-y-4">
                     {savedComponents.map((component, idx) => (
@@ -369,7 +395,7 @@ export default function AccountsPage() {
                             {component.savedAt ? new Date(component.savedAt).toLocaleDateString() : 'Recently saved'}
                           </span>
                         </div>
-                        
+
                         {/* User Inputs */}
                         {component.userInputs && component.userInputs.length > 0 && (
                           <div className="mb-4">
@@ -383,7 +409,7 @@ export default function AccountsPage() {
                             </div>
                           </div>
                         )}
-                        
+
                         {/* Analyzed Preferences */}
                         {component.analyzedPreferences && (
                           <div className="mb-4">
@@ -440,7 +466,7 @@ export default function AccountsPage() {
                             </div>
                           </div>
                         )}
-                        
+
                         {/* Component Code Preview */}
                         <details className="mt-4">
                           <summary className="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
@@ -466,7 +492,7 @@ export default function AccountsPage() {
             {activeTab === "preferences" && (
               <div className="space-y-6">
                 <div className="text-gray-700 mb-4">Your AI-learned design preferences:</div>
-                
+
                 {userPreferences ? (
                   <div className="space-y-4">
                     {/* AI-Extracted Themes */}
@@ -563,12 +589,12 @@ export default function AccountsPage() {
                             <span
                               key={idx}
                               className={`px-2 py-1 text-sm rounded-md ${
-                                keyword.source === 'ai-analysis' 
-                                  ? 'bg-indigo-100 text-indigo-800' 
+                                keyword.source === 'ai-analysis'
+                                  ? 'bg-indigo-100 text-indigo-800'
                                   : 'bg-blue-100 text-blue-800'
                               }`}
                             >
-                              {keyword.keyword} ({keyword.category}) 
+                              {keyword.keyword} ({keyword.category})
                               <span className="text-xs opacity-75 ml-1">
                                 {keyword.source === 'ai-analysis' ? '🤖' : '👤'}
                               </span>

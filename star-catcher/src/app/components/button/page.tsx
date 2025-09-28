@@ -254,7 +254,7 @@ function ButtonCustomizerContent() {
         
         // Track the user input
         setUserInputs(prev => [...prev, customizationInput]);
-        
+
         // Clear the input
         setCustomizationInput('');
         
@@ -280,7 +280,7 @@ function ButtonCustomizerContent() {
     setIsFavoriting(true);
     try {
       const currentCode = customizedCode || defaultButtonCode;
-      
+
       const response = await fetch('/api/save/components', {
         method: 'POST',
         headers: {
@@ -322,29 +322,26 @@ function ButtonCustomizerContent() {
     <div className="min-h-screen bg-eggshell">
       <Header />
 
-      {/* Component Navigation */}
-      <div className="bg-white border-b border-slate-gray/20">
+        {/* Component Navigation */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center py-4">
-            <div className="flex items-center gap-1 bg-slate-gray/10 rounded-lg p-1">
-              {componentNavItems.map((item) => (
-                <Link
-                  key={item.type}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all font-outfit ${
-                    item.isActive
-                      ? 'bg-white text-space-cadet shadow-sm'
-                      : 'text-slate-gray hover:text-space-cadet hover:bg-white/50'
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              ))}
+            <div className="flex items-center justify-center py-4">
+                <div className="flex items-center gap-1 bg-light rounded-2xl p-1">
+                    {componentNavItems.map((item) => (
+                        <Link
+                            key={item.type}
+                            href={item.href}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all font-outfit ${
+                                item.isActive ? 'bg-white text-ink' : 'text-ink hover:text-[color:var(--accent)]'
+                            }`}
+                        >
+                            {item.icon}
+                            <span>{item.name}</span>
+                        </Link>
+                    ))}
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -493,6 +490,23 @@ function ButtonCustomizerContent() {
                   </button>
                 )}
               </div>
+              <button
+                onClick={handleCustomize}
+                disabled={isLoading || !customizationInput.trim()}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-md  disabled:bg-slate-gray disabled:cursor-not-allowed transition-colors font-outfit font-medium"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Customizing...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="w-4 h-4" />
+                    Customize Button
+                  </>
+                )}
+              </button>
             </div>
 
             <div className="space-y-4">
