@@ -7,6 +7,8 @@ import TypographyPreview from './TypographyPreview';
 import PreviewCanvas from './PreviewCanvas';
 import LikeBar from './LikeBar';
 import { Palette, Type, Component as ComponentIcon, Unlock, Lock} from 'lucide-react';
+import { useSession } from "next-auth/react";
+
 
 type TabType = 'fonts' | 'colors' | 'components';
 
@@ -132,28 +134,63 @@ export default function GeneratorPanel({
         }
     }, [buildOptions, generateDesign]);
 
+const { data: session } = useSession();
 
-  const handleLike = useCallback((type: TabType) => {
-    let currentData: any = null;
-    
-    if (type === 'fonts' && currentFont) {
-      currentData = currentFont;
-    } else if (type === 'colors' && currentPalette) {
-      currentData = currentPalette;
-    } else if (type === 'components' && currentComponent) {
-      currentData = currentComponent;
-    }
+const handleLike = useCallback(async () => {
+  const userEmail = session?.user?.email;
+  if (!userEmail) return console.error("No logged-in user email found");
 
-    if (currentData) {
-      const memory = memorySystem.createMemoryFromData(
-        type === 'fonts' ? 'font' : type === 'colors' ? 'color' : 'component',
-        currentData
-      );
-      const feedback = memorySystem.createFeedbackFromMemory(memory, 'like');
-      memorySystem.saveMemory(memory);
-      memorySystem.saveFeedback(feedback);
+  // Save font if it exists
+  if (currentFont) {
+    const fontMemory = memorySystem.createMemoryFromData('font', currentFont);
+    const fontFeedback = memorySystem.createFeedbackFromMemory(fontMemory, 'like');
+    memorySystem.saveMemory(fontMemory);
+    memorySystem.saveFeedback(fontFeedback);
+
+    try {
+      const res = await fetch('/api/save/fonts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentFont),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to save font');
+      console.log('Font saved:', result);
+    } catch (err) {
+      console.error('Font save error:', err);
     }
-  }, [currentFont, currentPalette, currentComponent]);
+  }
+
+  // Save colors if they exist
+  if (currentPalette) {
+    const colorData = {
+      email: userEmail,
+      case_id: Date.now().toString(),
+      color: currentPalette.primary.value,
+      color2: currentPalette.secondary.value,
+    };
+
+    const colorMemory = memorySystem.createMemoryFromData('color', colorData);
+    const colorFeedback = memorySystem.createFeedbackFromMemory(colorMemory, 'like');
+    memorySystem.saveMemory(colorMemory);
+    memorySystem.saveFeedback(colorFeedback);
+
+    try {
+      const res = await fetch('/api/save/colors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(colorData),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to save color');
+      console.log('Color saved:', result);
+    } catch (err) {
+      console.error('Color save error:', err);
+    }
+  }
+}, [currentFont, currentPalette, session]);
+
+
 
 
     useEffect(() => { //space to generate new fonts and colors
@@ -258,10 +295,8 @@ export default function GeneratorPanel({
                   </div>
 
               <TypographyPreview fontPairing={currentFont} palette={currentPalette} />
-            {currentFont && (
-              <LikeBar
-                onLike={() => handleLike('fonts')}
-              />
+            {(currentFont || currentPalette) && (
+              <LikeBar onLike={handleLike} />
             )}
           </div>
         );

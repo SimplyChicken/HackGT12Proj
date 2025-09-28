@@ -66,6 +66,12 @@ export default function AccountsPage() {
       redirect: false,
     });
     console.log("signIn result:", res);
+
+    if (res?.error) {
+      alert(`Sign in failed: ${res.error}. Please try again.`);
+    } else {
+      console.log("Sign in successful!", res);
+    }
   }
 
 
