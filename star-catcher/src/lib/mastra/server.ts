@@ -67,7 +67,7 @@ const customizeComponentTool = {
       };
     }
   }
-} as const;
+};
 
 // Tool for generating font pairings
 const generateFontPairingsTool = {
