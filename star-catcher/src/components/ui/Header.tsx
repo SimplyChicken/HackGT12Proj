@@ -1,7 +1,12 @@
 import React from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+
 
 const Navbar: React.FC = () => {
+
+    const { status } = useSession();
+
     return (
         <nav className="w-full bg-transparent">
             <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-12 py-8">
@@ -26,7 +31,7 @@ const Navbar: React.FC = () => {
                     </Link>
 
                     <Link href="/accounts">
-                        <h1 className="font-ui text-base text-ink/90 transition-colors text-ink hover-accent"> register </h1>
+                        <h1 className="font-ui text-base text-ink/90 transition-colors text-ink hover-accent"> {status === "authenticated" ? "profile" : "register"} </h1>
                     </Link>
 
                 </div>
