@@ -1,19 +1,30 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { FontPairing } from '@/lib/schemas';
+import React, { useEffect, useState, useMemo } from 'react';
+import { FontPairing, ColorPalette } from '@/lib/schemas';
 
 interface TypographyPreviewProps {
   fontPairing: FontPairing | null;
+  palette: ColorPalette | null;
 }
 
-export default function TypographyPreview({ fontPairing }: TypographyPreviewProps) {
+
+export default function TypographyPreview({ fontPairing, palette }: TypographyPreviewProps) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  useEffect(() => {
-    if (!fontPairing) return;
+    const colors = useMemo(() => {
+        return {
+            primary:   palette?.primary?.value  ?? '#111111',
+            secondary: palette?.secondary?.value ?? '#374151',
+            accent:    palette?.accent?.value    ?? '#2563eb',
+        };
+    }, [palette]);
 
-    const loadFonts = async () => {
+    useEffect(() => {
+      if (!fontPairing) return;
+
+
+      const loadFonts = async () => {
       try {
         // Load primary font
         const primaryLink = document.createElement('link');
@@ -21,13 +32,11 @@ export default function TypographyPreview({ fontPairing }: TypographyPreviewProp
         primaryLink.rel = 'stylesheet';
         document.head.appendChild(primaryLink);
 
-        // Load secondary font
         const secondaryLink = document.createElement('link');
         secondaryLink.href = fontPairing.secondary.googleFontUrl;
         secondaryLink.rel = 'stylesheet';
         document.head.appendChild(secondaryLink);
 
-        // Wait for fonts to load
         await Promise.all([
           document.fonts.load(`${fontPairing.primary.weight}px ${fontPairing.primary.name}`),
           document.fonts.load(`${fontPairing.secondary.weight}px ${fontPairing.secondary.name}`),
@@ -46,7 +55,7 @@ export default function TypographyPreview({ fontPairing }: TypographyPreviewProp
   if (!fontPairing) {
     return (
       <div className="text-center py-12 text-gray-500">
-        <p>Click "Generate Font Pairing" to see typography preview</p>
+        <p> Press space to begin ! </p>
       </div>
     );
   }
@@ -56,48 +65,38 @@ export default function TypographyPreview({ fontPairing }: TypographyPreviewProp
 
   return (
     <div className="space-y-6">
-      {/* Font Information */}
-      {/*<div className="bg-gray-50 p-4 rounded-lg">*/}
-      {/*  <h3 className="text-lg font-semibold mb-3">Font Pairing Details</h3>*/}
-      {/*  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">*/}
-      {/*    <div>*/}
-      {/*      <h4 className="font-medium text-gray-700 mb-2">Primary Font</h4>*/}
-      {/*      <p className="text-sm text-gray-600">*/}
-      {/*        <strong>{fontPairing.primary.name}</strong> ({fontPairing.primary.weight})*/}
-      {/*      </p>*/}
-      {/*    </div>*/}
-      {/*    <div>*/}
-      {/*      <h4 className="font-medium text-gray-700 mb-2">Secondary Font</h4>*/}
-      {/*      <p className="text-sm text-gray-600">*/}
-      {/*        <strong>{fontPairing.secondary.name}</strong> ({fontPairing.secondary.weight})*/}
-      {/*      </p>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
 
-      {/* Typography Preview */}
-      <div className="border border-gray-200 text-center rounded-lg p-6 bg-white">
+        <div className="grid grid-cols-3 gap-3"> {[ { label: 'Primary', val: colors.primary }, { label: 'Secondary', val: colors.secondary }, { label: 'Accent', val: colors.accent }, ].map(({ label, val }) => ( <div key={label} className="rounded-md border border-gray-200 overflow-hidden"> <div style={{ background: val, height: 48 }} /> <div className="p-2 text-sm flex items-center justify-between"> <span className="font-medium">{label}</span> <code className="text-gray-600">{val}</code> </div> </div> ))} </div>
 
-          {/* Heading Examples */}
-        <div className="mb-4">
-          <h1 
-            className="text-4xl font-bold mb-2"
-            style={{ fontFamily: primaryFontFamily }}
-          >
-              {fontPairing.primary.name}
-          </h1>
+        <div
+            className="mx-auto rounded-xl border border-gray-200 shadow-sm shrink-0"
+            style={{ width: 1020, height: 400 }} // ⬅ fixed size
+        >
+            <div
+                className="h-full w-full flex flex-col items-center justify-center p-10"
+                style={{ backgroundColor: colors.secondary }}
+            >
+
+                <h1 className="text-4xl font-bold mb-8"
+                    style={{ fontFamily: primaryFontFamily,
+                            color: colors.primary ,
+                            fontSize: 'clamp(50px, 6vw, 70px)',
+                            paddingBlock: '0.35em',
+                    }}
+                > {fontPairing.primary.name} </h1>
+
+                <p className="text-lg mb-4"
+                   style={{ fontFamily: secondaryFontFamily,
+                            color: colors.accent,
+                            fontSize: 'clamp(38px, 3.2vw, 45px)',
+                            paddingBlock: '0.35em',
+                   }}
+                > {fontPairing.secondary.name} </p>
+
+            </div>
         </div>
 
-        {/* Body Text Examples */}
-        <div className="mb-4">
-          <p 
-            className="text-lg mb-4"
-            style={{ fontFamily: secondaryFontFamily }}
-          >
-              {fontPairing.secondary.name}
-          </p>
-        </div>
-      </div>
     </div>
+
     );
 }

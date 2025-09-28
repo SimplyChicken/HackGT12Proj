@@ -35,9 +35,7 @@ export const generateFontPairings = async (
 
     const now = Date.now();
 
-    if (_gfontsCache && now - _gfontsCache.ts < CACHE_TTL) {
-        console.log("using cached Google Fonts list");
-    } else {
+    if (!(_gfontsCache && now - _gfontsCache.ts < CACHE_TTL)) {
         const res = await fetch(
             `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`
         );
@@ -48,7 +46,7 @@ export const generateFontPairings = async (
 
     const data = _gfontsCache.data;
 
-    const EXCLUDED_WORDS = ["guides", "underline", "charted", "rubik", "bitcount"];
+    const EXCLUDED_WORDS = ["guides", "underline", "charted", "rubik", "bitcount", "highlight"];
 
     const keepFont = (f: GFontItem) => {
         if (!f.subsets?.includes("latin")) return false;
