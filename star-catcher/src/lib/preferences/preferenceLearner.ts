@@ -1,5 +1,4 @@
 import { StyleKeyword, UserPreferences } from '../schemas';
-import { StyleKeywordExtractor } from './keywordExtractor';
 
 export class PreferenceLearner {
   private preferences: UserPreferences;
@@ -19,23 +18,22 @@ export class PreferenceLearner {
    * Learn from user input and update preferences
    */
   learnFromInput(userInput: string, feedback?: 'like' | 'dislike'): void {
-    const extracted = StyleKeywordExtractor.extractPreferences(userInput);
+    // Safety check for undefined or null input
+    if (!userInput || typeof userInput !== 'string') {
+      return;
+    }
     
-    // Update style keywords
-    extracted.keywords.forEach(newKeyword => {
-      this.updateKeywordPreference(newKeyword, feedback);
-    });
+    // For now, just store the raw user input as a keyword
+    // The AI-powered theme extraction will handle the detailed analysis
+    const inputKeyword: StyleKeyword = {
+      keyword: userInput.toLowerCase(),
+      category: 'theme',
+      weight: feedback === 'like' ? 0.7 : feedback === 'dislike' ? 0.3 : 0.5,
+      usageCount: 1,
+      lastUsed: Date.now()
+    };
     
-    // Update color preferences
-    extracted.colors.forEach(color => {
-      this.updateColorPreference(color, feedback);
-    });
-    
-    // Update theme preferences
-    extracted.themes.forEach(theme => {
-      this.updateThemePreference(theme, feedback);
-    });
-    
+    this.updateKeywordPreference(inputKeyword, feedback);
     this.preferences.lastUpdated = Date.now();
   }
   
