@@ -5,14 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6408c112-39b5-4a6b-acb2-426bd74418f4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/star-catcher/src/lib/tools/generateColors.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/api/design/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/api/design/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/api/auth/[...nextauth]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/api/auth/[...nextauth]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/api/mastra/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/api/mastra/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/api/pairs/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/api/pairs/route.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/app/design/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/design/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/TypographyPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/TypographyPreview.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/lib/schemas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/lib/schemas/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/lib/tools/generateFontPairings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/lib/tools/generateFontPairings.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/LikeBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/LikeBar.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +46,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "fonts",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "last_opened_file_path": "/Users/angelina/Documents/projects/Star-Catcher",
     "node.js.detected.package.eslint": "true",
@@ -81,5 +83,26 @@
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="84c884e9-526e-4fd7-b02c-59d8fcdbff4d" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="84c884e9-526e-4fd7-b02c-59d8fcdbff4d">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
