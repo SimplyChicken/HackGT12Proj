@@ -56,17 +56,32 @@ export default function GeneratorPanel({
     setError(null);
     try {
       const memories = memorySystem.getLikedItems();
+      console.log(`Generating ${type} with options:`, options);
+      
       const response = await fetch('/api/design', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: type === 'fonts' ? 'font' : type === 'colors' ? 'color' : 'component', options, memories }),
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`HTTP error! status: ${response.status}, body:`, errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const result = await response.json();
+      console.log(`Generated ${type}:`, result);
+      
+      if (!result.data) {
+        throw new Error(`No data returned for ${type}`);
+      }
+      
       return result.data;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      console.error('Generation error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      console.error(`Generation error for ${type}:`, err);
+      setError(errorMessage);
       return null;
     }
   }, []);
@@ -101,6 +116,7 @@ export default function GeneratorPanel({
       // Colors
       const newPalette = await generateDesign('colors', {});
       if (newPalette) {
+        console.log('Setting new palette:', newPalette);
         setCurrentPalette(prev => ({
           primary:   lockPrimaryColor   ? prev?.primary   : newPalette.primary,
           secondary: lockSecondaryColor ? prev?.secondary : newPalette.secondary,
@@ -108,7 +124,9 @@ export default function GeneratorPanel({
         }));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      console.error('Generate both error:', err);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +158,14 @@ export default function GeneratorPanel({
   // --- Handle Likes ---
   const handleLike = useCallback(async () => {
     const userEmail = session?.user?.email;
-    if (!userEmail) return console.error("No logged-in user email found");
+    if (!userEmail) {
+      console.error("No logged-in user email found");
+      return;
+    }
+
+    console.log('Handling like for user:', userEmail);
+    console.log('Current font:', currentFont);
+    console.log('Current palette:', currentPalette);
 
     // Save font
     if (currentFont) {
@@ -148,15 +173,24 @@ export default function GeneratorPanel({
       const fontFeedback = memorySystem.createFeedbackFromMemory(fontMemory, 'like');
       memorySystem.saveMemory(fontMemory);
       memorySystem.saveFeedback(fontFeedback);
+      
       try {
+        const fontData = { ...currentFont, email: userEmail };
+        console.log('Saving font data:', fontData);
+        
         const res = await fetch('/api/save/fonts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...currentFont, email: userEmail }),
+          body: JSON.stringify(fontData),
         });
+        
         const result = await res.json();
-        if (!res.ok) throw new Error(result.error || 'Failed to save font');
-        console.log('Font saved:', result);
+        console.log('Font save response:', result);
+        
+        if (!res.ok) {
+          throw new Error((result as any).error || 'Failed to save font');
+        }
+        console.log('Font saved successfully:', result);
       } catch (err) {
         console.error('Font save error:', err);
       }
@@ -164,28 +198,98 @@ export default function GeneratorPanel({
 
     // Save colors
     if (currentPalette) {
+      // Validate color structure
+      if (!currentPalette.primary?.value || !currentPalette.secondary?.value || !currentPalette.accent?.value) {
+        console.error('Invalid color palette structure:', currentPalette);
+        return;
+      }
+
       const colorData = {
         email: userEmail,
         case_id: Date.now().toString(),
-        color: currentPalette.primary.value,
-        color2: currentPalette.secondary.value,
+        primary: currentPalette.primary.value,
+        secondary: currentPalette.secondary.value,
         accent: currentPalette.accent.value,
       };
+      
+      console.log('Saving color data:', colorData);
+      
       const colorMemory = memorySystem.createMemoryFromData('color', colorData);
       const colorFeedback = memorySystem.createFeedbackFromMemory(colorMemory, 'like');
       memorySystem.saveMemory(colorMemory);
       memorySystem.saveFeedback(colorFeedback);
+      
       try {
         const res = await fetch('/api/save/colors', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(colorData),
         });
+        
         const result = await res.json();
-        if (!res.ok) throw new Error(result.error || 'Failed to save color');
-        console.log('Color saved:', result);
+        console.log('Color save response:', result);
+        
+        if (!res.ok) {
+          throw new Error((result as any).error || 'Failed to save color');
+        }
+        console.log('Color saved successfully:', result);
       } catch (err) {
         console.error('Color save error:', err);
+      }
+    }
+
+    // Save combo (both font and color together)
+    if (currentFont && currentPalette) {
+      try {
+        // Create the color pair object in the format expected by the combo API
+        const colorPair = {
+          case_id: Date.now().toString(),
+          primary: {
+            name: "Primary",
+            value: currentPalette.primary.value,
+            contrast: currentPalette.primary.contrast || '#000000'
+          },
+          secondary: {
+            name: "Secondary", 
+            value: currentPalette.secondary.value,
+            contrast: currentPalette.secondary.contrast || '#000000'
+          },
+          accent: {
+            name: "Accent",
+            value: currentPalette.accent.value,
+            contrast: currentPalette.accent.contrast || '#000000'
+          }
+        };
+
+        // Create the font pair object in the format expected by the combo API
+        const fontPair = {
+          case_id: (Date.now() + 1).toString(), // Different case_id to avoid conflicts
+          primary: currentFont.primary,
+          secondary: currentFont.secondary
+        };
+
+        const comboData = {
+          colorPair,
+          fontPair
+        };
+
+        console.log('Saving combo data:', comboData);
+        
+        const res = await fetch('/api/save/combos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(comboData),
+        });
+        
+        const result = await res.json();
+        console.log('Combo save response:', result);
+        
+        if (!res.ok) {
+          throw new Error((result as any).error || 'Failed to save combo');
+        }
+        console.log('Combo saved successfully:', result);
+      } catch (err) {
+        console.error('Combo save error:', err);
       }
     }
   }, [currentFont, currentPalette, session]);
@@ -288,6 +392,7 @@ export default function GeneratorPanel({
           })}
         </div>
       </div>
+
 
       <TypographyPreview fontPairing={currentFont} palette={currentPalette} />
       {(currentFont || currentPalette) && <LikeBar onLike={handleLike} />}

@@ -5,6 +5,23 @@ import { connectDB } from "@/lib/mongodb";
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
+// Simple function to determine if a color is light or dark
+function getContrastColor(hex: string): string {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Convert to RGB
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  
+  // Calculate luminance
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+  // Return white for dark colors, black for light colors
+  return luminance > 0.5 ? '#000000' : '#FFFFFF';
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Connect to MongoDB
@@ -22,12 +39,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create a valid color pair object with case_id - save the full objects with names and values
+    // Create a valid color pair object with case_id - transform hex strings to proper structure
     const colorData = { 
       case_id: Date.now().toString(),
-      primary,
-      secondary,
-      accent
+      primary: {
+        name: "Primary",
+        value: primary,
+        contrast: getContrastColor(primary)
+      },
+      secondary: {
+        name: "Secondary", 
+        value: secondary,
+        contrast: getContrastColor(secondary)
+      },
+      accent: {
+        name: "Accent",
+        value: accent,
+        contrast: getContrastColor(accent)
+      }
     };
 
     console.log('Color save API - colorData to save:', colorData);
