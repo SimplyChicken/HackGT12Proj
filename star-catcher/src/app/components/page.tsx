@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, Layout, Navigation, Zap, CreditCard, Square, ArrowRight } from 'lucide-react';
+import { Layout, Navigation, Zap, CreditCard, Square, ArrowRight } from 'lucide-react';
 import ClientOnlyWrapper from '@/components/ClientOnlyWrapper';
 import Header from '@/components/ui/Header';
 
@@ -110,7 +110,7 @@ function ComponentGeneratorContent() {
               <Link
                 key={template.type}
                 href={template.href}
-                className="group bg-white rounded-lg shadow-sm border border-slate-gray/20 p-6 hover:shadow-md hover:border-space-cadet/30 transition-all"
+                className="group bg-amber-50 rounded-lg shadow-sm border border-slate-gray/20 p-6 hover:shadow-md hover:border-space-cadet/30 transition-all"
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="w-12 h-12 bg-space-cadet rounded-lg flex items-center justify-center group-hover:bg-space-cadet/90 transition-colors mb-4">
@@ -130,33 +130,6 @@ function ComponentGeneratorContent() {
           </div>
         </div>
 
-        {/* Features Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-slate-gray/20 p-8">
-          <h3 className="text-xl font-semibold text-space-cadet mb-6 text-center font-poly">Features</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-space-cadet rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <h4 className="text-lg font-medium text-space-cadet mb-2 font-poly">AI-Powered</h4>
-              <p className="text-slate-gray font-outfit">Natural language customization using advanced AI models</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-space-cadet rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Layout className="w-6 h-6 text-white" />
-              </div>
-              <h4 className="text-lg font-medium text-space-cadet mb-2 font-poly">Live Preview</h4>
-              <p className="text-slate-gray font-outfit">See your changes in real-time with interactive previews</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-space-cadet rounded-lg flex items-center justify-center mx-auto mb-4">
-                <ArrowRight className="w-6 h-6 text-white" />
-              </div>
-              <h4 className="text-lg font-medium text-space-cadet mb-2 font-poly">Export Ready</h4>
-              <p className="text-slate-gray font-outfit">Get production-ready React components with clean code</p>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );

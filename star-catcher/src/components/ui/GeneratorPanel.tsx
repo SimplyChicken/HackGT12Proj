@@ -130,13 +130,6 @@ export default function GeneratorPanel({
             setError(msg);
         } finally {
             setIsLoading(false);
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         }
     }, [
         generateDesign,
@@ -147,34 +140,6 @@ export default function GeneratorPanel({
         lockSecondaryColor,
         lockAccentColor,
     ]);
-<<<<<<< Updated upstream
-            // Colors
-            const newPalette = await generateDesign('colors', {});
-            if (newPalette) {
-                setCurrentPalette((prev) => ({
-                    primary: lockPrimaryColor ? prev?.primary : newPalette.primary,
-                    secondary: lockSecondaryColor ? prev?.secondary : newPalette.secondary,
-                    accent: lockAccentColor ? prev?.accent : newPalette.accent,
-                }) as ColorPalette);
-            }
-        } catch (err) {
-            const msg = err instanceof Error ? err.message : 'An error occurred';
-            console.error('Generate both error:', err);
-            setError(msg);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [
-        generateDesign,
-        buildFontOptions,
-        lockPrimaryFont,
-        lockSecondaryFont,
-        lockPrimaryColor,
-        lockSecondaryColor,
-        lockAccentColor,
-    ]);
-=======
->>>>>>> Stashed changes
 
     // Spacebar to generate
     useEffect(() => {
