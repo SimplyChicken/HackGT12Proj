@@ -32,45 +32,17 @@ export const ColorPaletteSchema = z.object({
     name: z.string(),
     value: z.string(),
     contrast: z.string(),
-    usage: z.string(),
   }),
   secondary: z.object({
     name: z.string(),
     value: z.string(),
     contrast: z.string(),
-    usage: z.string(),
   }),
   accent: z.object({
     name: z.string(),
     value: z.string(),
     contrast: z.string(),
-    usage: z.string(),
   }),
-  neutral: z.object({
-    name: z.string(),
-    value: z.string(),
-    contrast: z.string(),
-    usage: z.string(),
-  }),
-  background: z.object({
-    name: z.string(),
-    value: z.string(),
-    contrast: z.string(),
-    usage: z.string(),
-  }),
-  surface: z.object({
-    name: z.string(),
-    value: z.string(),
-    contrast: z.string(),
-    usage: z.string(),
-  }),
-  text: z.object({
-    name: z.string(),
-    value: z.string(),
-    contrast: z.string(),
-    usage: z.string(),
-  }),
-  rationale: z.string(),
 });
 
 export type ColorPalette = z.infer<typeof ColorPaletteSchema>;

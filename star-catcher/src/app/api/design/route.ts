@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateFontPairings } from '@/lib/tools/generateFontPairings';
+import { generateTrio } from '@/lib/tools/generateColors';
 import { DesignResponseSchema, MemoryItemSchema } from '@/lib/schemas';
 import { z } from 'zod';
 
@@ -28,52 +29,7 @@ export async function POST(request: NextRequest) {
         break;
         
       case 'color':
-        // TODO: Implement color palette generation
-        result = {
-          primary: {
-            name: 'Ocean Blue',
-            value: '#2563eb',
-            contrast: '#ffffff',
-            usage: 'Primary actions and links'
-          },
-          secondary: {
-            name: 'Forest Green',
-            value: '#059669',
-            contrast: '#ffffff',
-            usage: 'Secondary actions and success states'
-          },
-          accent: {
-            name: 'Sunset Orange',
-            value: '#ea580c',
-            contrast: '#ffffff',
-            usage: 'Highlights and warnings'
-          },
-          neutral: {
-            name: 'Slate Gray',
-            value: '#64748b',
-            contrast: '#ffffff',
-            usage: 'Text and borders'
-          },
-          background: {
-            name: 'Pure White',
-            value: '#ffffff',
-            contrast: '#000000',
-            usage: 'Main background'
-          },
-          surface: {
-            name: 'Light Gray',
-            value: '#f8fafc',
-            contrast: '#000000',
-            usage: 'Card backgrounds'
-          },
-          text: {
-            name: 'Dark Gray',
-            value: '#1e293b',
-            contrast: '#ffffff',
-            usage: 'Primary text'
-          },
-          rationale: 'A modern, accessible color palette with high contrast ratios and professional appeal.'
-        };
+        result = await generateTrio();
         break;
         
       case 'component':

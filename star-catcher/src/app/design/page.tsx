@@ -101,6 +101,8 @@ function DesignGeneratorContent() {
             setIsMemoriesOpen={setIsMemoriesOpen}
           />
         </div>
+
+        </div>
       </main>
     </div>
   );
