@@ -137,63 +137,75 @@ export function generateTrio(): ColorPalette {
     const strategy = pick(rnd(), [
         ["analog", 0.1],
         ["split", 0.15],
-        ["complement", 0.75], // complements are gentler now
+        ["complement", 0.75],
     ]) as Strategy;
 
-    // Mood tunes the S/L bands for that muted vibe
+    // --- MOOD: added vivid for brighter colors ---
     const mood = pick(rnd(), [
-        ["pastel", 0.45], // airy
-        ["dusty", 0.40],  // slightly earthier
-        ["slate", 0.15],  // cooler/greyer
-    ]) as "pastel" | "dusty" | "slate";
+        ["pastel", 0.35],
+        ["dusty", 0.25],
+        ["slate", 0.10],
+        ["vivid", 0.30], // brighter, saturated colors
+    ]) as "pastel" | "dusty" | "slate" | "vivid";
 
-    const baseH = Math.floor(rnd() * 360);
+    // --- Base hue biased to favor red, blue, purple ---
+    const baseH = (() => {
+        const r = rnd();
+        if (r < 0.25) return lerp(0, 20, rnd());      // red
+        if (r < 0.50) return lerp(200, 240, rnd());   // blue
+        if (r < 0.70) return lerp(260, 280, rnd());   // purple
+        return Math.floor(rnd() * 360);               // any hue
+    })();
 
-    // Saturation & lightness ranges (muted)
+    // --- SATURATION ---
     const satPrimary = (
         mood === "pastel" ? lerp(18, 34, randNormal01(rnd))
-            : mood === "dusty" ? lerp(20, 30, randNormal01(rnd))
-                : /* slate */        lerp(12, 24, randNormal01(rnd))
+        : mood === "dusty" ? lerp(20, 30, randNormal01(rnd))
+        : mood === "slate" ? lerp(12, 24, randNormal01(rnd))
+        : /* vivid */ lerp(60, 100, randNormal01(rnd)) // brighter, more saturated
     );
 
+    // --- LIGHTNESS ---
     const lightPrimary = theme === "light"
         ? (mood === "pastel" ? lerp(78, 88, randNormal01(rnd))
             : mood === "dusty" ? lerp(70, 80, randNormal01(rnd))
-                : /* slate */        lerp(64, 74, randNormal01(rnd)))
+            : mood === "slate" ? lerp(64, 74, randNormal01(rnd))
+            : /* vivid */ lerp(40, 90, randNormal01(rnd))) // wider lightness
         : (mood === "pastel" ? lerp(42, 52, randNormal01(rnd))
             : mood === "dusty" ? lerp(38, 48, randNormal01(rnd))
-                : /* slate */        lerp(34, 44, randNormal01(rnd)));
+            : mood === "slate" ? lerp(34, 44, randNormal01(rnd))
+            : /* vivid */ lerp(35, 60, randNormal01(rnd)));
 
+    // --- HUE SHIFTS ---
+    const splitGap = lerp(50, 80, rnd());
+    const analogGap = lerp(20, 35, rnd());
+    const compGap = 180 + lerp(-10, 10, rnd());
 
-    const splitGap = lerp(50, 80, rnd());        // tighter split
-    const analogGap = lerp(20, 35, rnd());       // close neighbors
-    const compGap = 180 + lerp(-10, 10, rnd());  // softened complement
-
-    const hueShift = compGap - analogGap;
-        strategy === "complement" ? compGap
-            : strategy === "analog"    ? (rnd() < 0.5 ? analogGap : -analogGap)
-                : /* split */                (rnd() < 0.5 ? splitGap : -splitGap);
-
-   // const hueShift = 180 + lerp(-10, 10, rnd());
+    const hueShift = strategy === "complement" ? compGap
+        : strategy === "analog" ? (rnd() < 0.5 ? analogGap : -analogGap)
+        : (rnd() < 0.5 ? splitGap : -splitGap);
 
     let primary = { h: baseH, s: satPrimary, l: lightPrimary };
 
     let accent = {
         h: (baseH + hueShift + 360) % 360,
-        s: clamp(primary.s + lerp(-6, 8, randNormal01(rnd)), 10, 45),
-        l: clamp(primary.l + lerp(-6, 6, randNormal01(rnd)), 20, 90),
+        s: clamp(primary.s + lerp(-6, 8, randNormal01(rnd)), 10, 100), // upper bound extended
+        l: clamp(primary.l + lerp(-6, 6, randNormal01(rnd)), 20, 90),  // wider lightness
     };
 
-    // Secondary (surface): very low chroma, near-neutral with slight base bias
+    // --- SECONDARY COLOR ---
     const neutralH = (baseH + lerp(-8, 8, rnd()) + 360) % 360;
     let secondary = {
         h: neutralH,
-        s: theme === "light" ? lerp(3, 25, randNormal01(rnd)) : lerp(4, 10, randNormal01(rnd)),
+        s: theme === "light" ? lerp(3, 45, randNormal01(rnd)) : lerp(4, 40, randNormal01(rnd)), // slightly more chroma
         l: theme === "light" ? lerp(78, 96, randNormal01(rnd)) : lerp(16, 24, randNormal01(rnd)),
     };
 
-    // Final muting pass (stronger on accent/primary than on the already-neutral secondary)
-    const kPrim = 0.9, kAcc = 0.85, kSec = 0.5;
+    // --- MUTING (less aggressive for vivid) ---
+    const kPrim = mood === "vivid" ? 0.15 : 0.9;
+    const kAcc  = mood === "vivid" ? 0.1 : 0.85;
+    const kSec  = mood === "vivid" ? 0.05 : 0.5;
+
     primary   = mute(primary.h,   primary.s,   primary.l,   kPrim, theme);
     accent    = mute(accent.h,    accent.s,    accent.l,    kAcc,  theme);
     secondary = mute(secondary.h, secondary.s, secondary.l, kSec,  theme);
@@ -211,3 +223,4 @@ export function generateTrio(): ColorPalette {
         accent:    { name: "Accent",    value: accentHex,    contrast: onColorByLightness(accent.l) },
     };
 }
+
