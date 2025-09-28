@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6408c112-39b5-4a6b-acb2-426bd74418f4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/app/accounts/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/accounts/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/LikeBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/LikeBar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +45,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "ultimate__frontend",
+    "git-widget-placeholder": "temp",
     "junie.onboarding.icon.badge.shown": "true",
     "last_opened_file_path": "/Users/angelina/Documents/projects/Star-Catcher",
     "node.js.detected.package.eslint": "true",
@@ -60,7 +61,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-WS-252.25557.126" />
+        <option value="bundled-python-sdk-ce6832f46686-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.178" />
       </set>
     </attachedChunks>
   </component>
