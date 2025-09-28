@@ -6,6 +6,8 @@ import { Sparkles, Wand2, Eye, Code, Layout, Navigation, Zap, CreditCard, Square
 import ClientOnlyWrapper from '@/components/ClientOnlyWrapper';
 import Header from '@/components/ui/Header';
 import TopPreferences from '@/components/ui/TopPreferences';
+import TopColors from '@/components/ui/TopColors';
+import TopFonts from '@/components/ui/TopFonts';
 import { useSession } from 'next-auth/react';
 
 // Component navigation data
@@ -515,9 +517,13 @@ function NavbarCustomizerContent() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h4 className="text-sm font-medium text-space-cadet font-outfit">Your Saved Preferences:</h4>
-              <TopPreferences />
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-space-cadet font-outfit">Your Preferences:</h4>
+              <div className="space-y-2">
+                <TopColors />
+                <TopFonts />
+                <TopPreferences />
+              </div>
             </div>
           </div>
         </div>

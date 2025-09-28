@@ -58,8 +58,17 @@ export default function AccountsPage() {
           const colorPairs: ColorPair[] = pairsData.colorPairs || [];
           const fontPairs: FontPair[] = pairsData.fontPairs || [];
           const combos: Combo[] = pairsData.combos || [];
+          
+          // Deduplicate font pairs based on primary and secondary font names
+          const uniqueFontPairs = fontPairs.filter((pair, index, self) => 
+            index === self.findIndex(p => 
+              p.primary?.name === pair.primary?.name && 
+              p.secondary?.name === pair.secondary?.name
+            )
+          );
+          
           setColorPairs(colorPairs);
-          setFontPairs(fontPairs);
+          setFontPairs(uniqueFontPairs);
           setCombos(combos);
         }
 
@@ -115,7 +124,7 @@ export default function AccountsPage() {
     }
   }
 
-  async function handleDelete(type: 'color' | 'font' | 'combo', caseId: string) {
+  async function handleDelete(type: 'color' | 'font' | 'combo' | 'component', caseId: string) {
     if (!session?.user?.email) return;
 
     try {
@@ -148,6 +157,16 @@ export default function AccountsPage() {
           setCombos(prev => prev.filter(combo => combo.case_id !== caseId));
         } else {
           console.error('Failed to delete combo');
+        }
+      } else if (type === 'component') {
+        const res = await fetch(`/api/save/components?id=${caseId}`, {
+          method: 'DELETE',
+        });
+        
+        if (res.ok) {
+          setSavedComponents(prev => prev.filter(component => component._id !== caseId));
+        } else {
+          console.error('Failed to delete component');
         }
       }
     } catch (err) {
@@ -317,7 +336,7 @@ export default function AccountsPage() {
             {/* Fonts tab */}
             {activeTab === "fonts" && (
               <>
-                <div className="text-gray-700">Your saved font pairs:</div>
+                <div className="text-gray-700 mb-4">Your saved font pairs:</div>
                 {fontPairs.map((pair, i) => (
                   <PairCard key={`${pair.case_id}-${i}`} fontPair={pair} showFonts onDelete={handleDelete} />
                 ))}
@@ -365,9 +384,20 @@ export default function AccountsPage() {
                               <p className="text-sm text-gray-500 mt-1">{component.description}</p>
                             )}
                           </div>
-                          <span className="text-xs text-gray-500">
-                            {component.savedAt ? new Date(component.savedAt).toLocaleDateString() : 'Recently saved'}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs text-gray-500">
+                              {component.savedAt ? new Date(component.savedAt).toLocaleDateString() : 'Recently saved'}
+                            </span>
+                            <button
+                              onClick={() => handleDelete('component', component._id)}
+                              className="text-red-500 hover:text-red-700 p-1"
+                              title="Delete component"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                         
                         {/* User Inputs */}

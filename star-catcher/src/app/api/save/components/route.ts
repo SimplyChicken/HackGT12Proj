@@ -6,6 +6,47 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { openai } from "@ai-sdk/openai";
 
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const componentId = searchParams.get('id');
+
+    if (!componentId) {
+      return NextResponse.json({ error: 'Component ID is required' }, { status: 400 });
+    }
+
+    const session = await getServerSession(authOptions);
+    if (!(session as any)?.user?.email) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    console.log('Component delete API - deleting component ID:', componentId, 'for user:', (session as any).user.email);
+
+    // Delete the component from SavedComponent collection
+    const result = await SavedComponent.findOneAndDelete({
+      _id: componentId,
+      userId: (session as any).user.email
+    });
+
+    console.log('Component delete API - result:', result);
+
+    if (!result) {
+      return NextResponse.json(
+        { success: false, error: "Component not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Component delete error:', err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();

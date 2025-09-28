@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { Palette, Type, Star } from 'lucide-react';
 
@@ -35,20 +35,7 @@ const TopPreferences = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    console.log('🔍 TopPreferences useEffect - session:', session);
-    
-    if (!session?.user?.email) {
-      console.log('🔍 No session or email, setting loading to false');
-      setLoading(false);
-      return;
-    }
-
-    console.log('🔍 Session found, fetching preferences for:', session.user.email);
-    fetchUserPreferences();
-  }, [session]);
-
-  const fetchUserPreferences = async () => {
+  const fetchUserPreferences = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/preferences', {
@@ -107,10 +94,23 @@ const TopPreferences = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    console.log('🔍 TopPreferences useEffect - session:', session);
+    
+    if (!session?.user?.email) {
+      console.log('🔍 No session or email, setting loading to false');
+      setLoading(false);
+      return;
+    }
+
+    console.log('🔍 Session found, fetching preferences for:', session.user.email);
+    fetchUserPreferences();
+  }, [session?.user?.email, fetchUserPreferences]);
 
   // Generate top 3 color combinations from user's preferred colors
-  const generateColorCombos = (): ColorCombo[] => {
+  const colorCombos = useMemo((): ColorCombo[] => {
     if (!preferences?.preferredColors || preferences.preferredColors.length === 0) {
       // Default color combinations if no preferences
       return [
@@ -153,10 +153,10 @@ const TopPreferences = () => {
     }
 
     return combos;
-  };
+  }, [preferences?.preferredColors]);
 
   // Generate top 3 font pairings from user's preferences
-  const generateFontPairings = (): FontPairing[] => {
+  const fontPairings = useMemo((): FontPairing[] => {
     if (!preferences?.styleKeywords || preferences.styleKeywords.length === 0) {
       // Default font pairings if no preferences
       return [
@@ -204,10 +204,7 @@ const TopPreferences = () => {
     }
 
     return pairings;
-  };
-
-  const colorCombos = generateColorCombos();
-  const fontPairings = generateFontPairings();
+  }, [preferences?.styleKeywords]);
 
   if (!session?.user?.email) {
     return (
@@ -243,64 +240,36 @@ const TopPreferences = () => {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Color Combinations */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <Palette className="w-4 h-4 text-space-cadet" />
-          <h4 className="text-sm font-medium text-space-cadet font-outfit">Your Top Color Combos</h4>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {colorCombos.map((combo, index) => (
-            <div key={index} className="text-center">
-              <div className="flex rounded-lg overflow-hidden shadow-sm border border-slate-gray/20">
-                <div 
-                  className="w-1/3 h-8" 
-                  style={{ backgroundColor: combo.primary }}
-                  title={`Primary: ${combo.primary}`}
-                />
-                <div 
-                  className="w-1/3 h-8" 
-                  style={{ backgroundColor: combo.secondary }}
-                  title={`Secondary: ${combo.secondary}`}
-                />
-                <div 
-                  className="w-1/3 h-8" 
-                  style={{ backgroundColor: combo.accent }}
-                  title={`Accent: ${combo.accent}`}
-                />
-              </div>
-              <p className="text-xs text-slate-gray mt-1 font-outfit">{combo.name}</p>
-            </div>
-          ))}
-        </div>
+    <div>
+      <div className="flex items-center gap-2 mb-2">
+        <Star className="w-4 h-4 text-space-cadet" />
+        <h4 className="text-sm font-medium text-space-cadet font-outfit">Style Keywords</h4>
       </div>
-
-      {/* Font Pairings */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <Type className="w-4 h-4 text-space-cadet" />
-          <h4 className="text-sm font-medium text-space-cadet font-outfit">Your Top Fonts</h4>
-        </div>
-        <div className="space-y-2">
-          {fontPairings.map((pairing, index) => (
-            <div key={index} className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-slate-gray/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-space-cadet font-outfit" style={{ fontFamily: pairing.heading }}>
-                    {pairing.heading}
-                  </p>
-                  <p className="text-xs text-slate-gray font-outfit" style={{ fontFamily: pairing.body }}>
-                    {pairing.body}
-                  </p>
+      <div className="space-y-1">
+        {preferences?.styleKeywords && preferences.styleKeywords.length > 0 ? (
+          preferences.styleKeywords
+            .sort((a, b) => (b.weight * b.usageCount) - (a.weight * a.usageCount))
+            .slice(0, 3)
+            .map((keyword, index) => (
+              <div key={index} className="bg-white/60 backdrop-blur-sm rounded-lg p-2 border border-slate-gray/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-space-cadet font-outfit">{keyword.keyword}</span>
+                    <span className="text-xs text-slate-gray font-outfit capitalize bg-slate-gray/10 px-1.5 py-0.5 rounded">
+                      {keyword.category}
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-gray bg-slate-gray/10 px-1.5 py-0.5 rounded-full font-outfit">
+                    {keyword.usageCount}x
+                  </span>
                 </div>
-                <span className="text-xs text-slate-gray bg-slate-gray/10 px-2 py-1 rounded-full font-outfit">
-                  {pairing.name}
-                </span>
               </div>
-            </div>
-          ))}
-        </div>
+            ))
+        ) : (
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-2 border border-slate-gray/20">
+            <p className="text-xs text-slate-gray font-outfit">No style preferences yet</p>
+          </div>
+        )}
       </div>
     </div>
   );

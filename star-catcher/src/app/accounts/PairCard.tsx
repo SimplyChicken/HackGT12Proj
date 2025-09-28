@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 // Support both old and new data formats
 type ColorPair = { 
   case_id: string; 
@@ -56,6 +57,33 @@ export default function PairCard({
   const f1 = fontPair?.primary?.name ?? fontPair?.font ?? "Arial";
   const f2 = fontPair?.secondary?.name ?? fontPair?.font2 ?? "sans-serif";
 
+  // Ensure Google fonts are loaded when URLs are provided
+  useEffect(() => {
+    if (!showFonts || !fontPair) return;
+    const links: HTMLLinkElement[] = [];
+
+    if (fontPair.primary?.googleFontUrl) {
+      const l = document.createElement('link');
+      l.href = fontPair.primary.googleFontUrl;
+      l.rel = 'stylesheet';
+      document.head.appendChild(l);
+      links.push(l);
+    }
+    if (fontPair.secondary?.googleFontUrl) {
+      const l = document.createElement('link');
+      l.href = fontPair.secondary.googleFontUrl;
+      l.rel = 'stylesheet';
+      document.head.appendChild(l);
+      links.push(l);
+    }
+
+    return () => {
+      links.forEach(l => {
+        if (l.parentNode) l.parentNode.removeChild(l);
+      });
+    };
+  }, [showFonts, fontPair?.primary?.googleFontUrl, fontPair?.secondary?.googleFontUrl, fontPair]);
+
   return (
     <div className="border border-slate-gray/20 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
       {/* Render ONLY Color Pair */}
@@ -73,7 +101,7 @@ export default function PairCard({
                   <div className="w-8 h-8 rounded-sm border border-slate-gray/30" style={{ background: c3 }} title={colorPair.accent.name} />
                 )}
               </div>
-              {onDelete && (
+              {onDelete && colorPair.case_id && (
                 <button
                   onClick={() => onDelete(isCombo ? 'combo' : 'color', colorPair.case_id)}
                   className="ml-2 text-red-500 hover:text-red-700 text-sm"
@@ -114,8 +142,12 @@ export default function PairCard({
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold text-space-cadet font-poly">Font Pair ({fontPair.case_id})</h2>
             <div className="flex items-center gap-2">
-              <div className="text-sm text-slate-gray font-outfit">{f1} · {f2}</div>
-              {onDelete && (
+              <div className="text-sm text-slate-gray font-outfit flex items-center gap-1">
+                <span style={{ fontFamily: f1, fontWeight: fontPair.primary?.weight || 'normal' }}>{f1}</span>
+                <span>·</span>
+                <span style={{ fontFamily: f2, fontWeight: fontPair.secondary?.weight || 'normal' }}>{f2}</span>
+              </div>
+              {onDelete && fontPair.case_id && (
                 <button
                   onClick={() => onDelete(isCombo ? 'combo' : 'font', fontPair.case_id)}
                   className="ml-2 text-red-500 hover:text-red-700 text-sm"
@@ -132,7 +164,7 @@ export default function PairCard({
               <span className="text-slate-gray font-outfit">
                 Primary:
               </span>
-              <span className="font-mono text-space-cadet">
+              <span className="text-space-cadet" style={{ fontFamily: f1, fontWeight: fontPair.primary?.weight || 'normal' }}>
                 {f1} {fontPair.primary?.weight && `(${fontPair.primary.weight})`}
               </span>
             </div>
@@ -140,19 +172,11 @@ export default function PairCard({
               <span className="text-slate-gray font-outfit">
                 Secondary:
               </span>
-              <span className="font-mono text-space-cadet">
+              <span className="text-space-cadet" style={{ fontFamily: f2, fontWeight: fontPair.secondary?.weight || 'normal' }}>
                 {f2} {fontPair.secondary?.weight && `(${fontPair.secondary.weight})`}
               </span>
             </div>
 
-            <div className="mt-3 space-y-2">
-              <p className="text-sm text-space-cadet" style={{ fontFamily: f1, fontWeight: fontPair.primary?.weight || 'normal' }}>
-                Sample: The quick brown fox jumps over the lazy dog.
-              </p>
-              <p className="text-sm text-slate-gray" style={{ fontFamily: f2, fontWeight: fontPair.secondary?.weight || 'normal' }}>
-                Sample: The quick brown fox jumps over the lazy dog.
-              </p>
-            </div>
           </div>
         </>
       )}
@@ -168,7 +192,11 @@ export default function PairCard({
                 <div className="w-8 h-8 rounded-sm border border-slate-gray/30" style={{ backgroundColor: c3 }} title={colorPair.accent.name} />
               )}
             </div>
-            <div className="text-sm text-slate-gray font-outfit">{f1} / {f2}</div>
+            <div className="text-sm text-slate-gray font-outfit flex items-center gap-1">
+              <span style={{ fontFamily: f1, fontWeight: fontPair.primary?.weight || 'normal' }}>{f1}</span>
+              <span>/</span>
+              <span style={{ fontFamily: f2, fontWeight: fontPair.secondary?.weight || 'normal' }}>{f2}</span>
+            </div>
           </div>
         </div>
       )}
