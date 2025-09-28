@@ -66,8 +66,6 @@ export default function TypographyPreview({ fontPairing, palette }: TypographyPr
   return (
     <div className="space-y-6">
 
-        <div className="grid grid-cols-3 gap-3"> {[ { label: 'Primary', val: colors.primary }, { label: 'Secondary', val: colors.secondary }, { label: 'Accent', val: colors.accent }, ].map(({ label, val }) => ( <div key={label} className="bg-white rounded-md border border-gray-200 overflow-hidden font-ui text-ink"> <div style={{ background: val, height: 48 }} /> <div className="p-2 text-sm flex items-center justify-between"> <span className="font-medium">{label}</span> <code className="text-gray-600">{val}</code> </div> </div> ))} </div>
-
         <div
             className="mx-auto rounded-xl border border-gray-200 shadow-sm shrink-0"
             style={{ width: 1020, height: 400 }} // ⬅ fixed size

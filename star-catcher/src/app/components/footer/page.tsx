@@ -297,29 +297,25 @@ function FooterCustomizerContent() {
     <div className="min-h-screen bg-eggshell">
       <Header />
 
-      {/* Component Navigation */}
-      <div className="bg-white border-b border-slate-gray/20">
+        {/* Component Navigation */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center py-4">
-            <div className="flex items-center gap-1 bg-slate-gray/10 rounded-lg p-1">
-              {componentNavItems.map((item) => (
-                <Link
-                  key={item.type}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all font-outfit ${
-                    item.isActive
-                      ? 'bg-white text-space-cadet shadow-sm'
-                      : 'text-slate-gray hover:text-space-cadet hover:bg-white/50'
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              ))}
+            <div className="flex items-center justify-center py-4">
+                <div className="flex items-center gap-1 bg-light rounded-2xl p-1">
+                    {componentNavItems.map((item) => (
+                        <Link
+                            key={item.type}
+                            href={item.href}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all font-outfit ${
+                                item.isActive ? 'bg-white text-ink' : 'text-ink hover:text-[color:var(--accent)]'
+                            }`}
+                        >
+                            {item.icon}
+                            <span>{item.name}</span>
+                        </Link>
+                    ))}
+                </div>
             </div>
-          </div>
         </div>
-      </div>
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -412,41 +408,41 @@ function FooterCustomizerContent() {
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
             Customize Your Footer
           </h3>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="customization" className="block text-sm font-medium text-gray-700 mb-2">
-                  What changes would you like to make?
-                </label>
-                <textarea
-                  id="customization"
-                  value={customizationInput}
-                  onChange={(e) => setCustomizationInput(e.target.value)}
-                  placeholder="e.g., Add social media icons, make it dark themed, add newsletter signup..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                  rows={6}
-                />
-              </div>
 
-              <button
-                onClick={handleCustomize}
-                disabled={isLoading || !customizationInput.trim()}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Customizing...
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="w-4 h-4" />
-                    Customize Footer
-                  </>
-                )}
-              </button>
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                    <div>
+                        <label htmlFor="customization" className="block text-sm font-medium text-space-cadet mb-2 font-outfit">
+                            What changes would you like to make?
+                        </label>
+                        <textarea
+                            id="customization"
+                            value={customizationInput}
+                            onChange={(e) => setCustomizationInput(e.target.value)}
+                            placeholder="e.g., Make it red with white text, add an icon, make it larger..."
+                            className="w-full px-3 py-2 border border-slate-gray/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-space-cadet/30 focus:border-space-cadet resize-none font-outfit"
+                            rows={6}
+                        />
+                    </div>
+
+                    <button
+                        onClick={handleCustomize}
+                        disabled={isLoading || !customizationInput.trim()}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-md  disabled:bg-slate-gray disabled:cursor-not-allowed transition-colors font-outfit font-medium"
+                    >
+                        {isLoading ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Customizing...
+                            </>
+                        ) : (
+                            <>
+                                <Wand2 className="w-4 h-4" />
+                                Customize Button
+                            </>
+                        )}
+                    </button>
+                </div>
 
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-blue-900">Try these examples:</h4>

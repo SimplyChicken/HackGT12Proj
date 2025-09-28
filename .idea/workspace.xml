@@ -5,10 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6408c112-39b5-4a6b-acb2-426bd74418f4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/components/button/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/components/button/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/components/card/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/components/card/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/components/footer/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/components/footer/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/components/hero/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/components/hero/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/components/navbar/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/components/navbar/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/globals.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/Header.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/TypographyPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/TypographyPreview.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,6 +28,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="backup" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
