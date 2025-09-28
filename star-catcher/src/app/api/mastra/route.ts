@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import getServerSession from 'next-auth';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 
 // Force Node.js runtime to avoid Edge runtime issues with Mastra
@@ -152,6 +152,7 @@ CRITICAL STRUCTURE PRESERVATION RULES - MUST FOLLOW:
 
 Please analyze the base code and user requirements, then return the complete customized React component code that fully implements the user's request while preserving the exact structure above. Return only the React component code without explanations, following ALL the iframe compatibility and structure preservation rules above.`;
 
+        // Call the agent with the prompt using generateVNext
         const agentResult = await componentAgent.generateVNext(prompt);
         
         console.log('🔵 Agent result:', JSON.stringify(agentResult, null, 2));

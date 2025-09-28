@@ -6,11 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 import User from "../../../models/User";
 import SavedComponent from "../../../models/SavedComponent";
 import dbConnect from "../../../lib/dbConnect";
-import { auth } from "../auth/[...nextauth]/route";
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

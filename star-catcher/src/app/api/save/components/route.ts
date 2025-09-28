@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import User from '@/models/User';
 import UserPreferences from '@/models/UserPreferences';
 import SavedComponent from '@/models/SavedComponent';
-import { auth } from '../../auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/route';
 import { openai } from "@ai-sdk/openai";
 
 export async function POST(req: Request) {
@@ -10,7 +11,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { component, userInputs } = body;
 
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!(session as any)?.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }

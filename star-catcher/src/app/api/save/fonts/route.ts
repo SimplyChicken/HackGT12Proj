@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 import User from '@/models/User';
-import { auth } from '../../auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/route';
 import { connectDB } from '@/lib/mongodb';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!(session as any)?.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
@@ -60,7 +61,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'case_id is required' }, { status: 400 });
     }
 
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!(session as any)?.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }

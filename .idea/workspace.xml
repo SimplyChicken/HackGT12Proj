@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6408c112-39b5-4a6b-acb2-426bd74418f4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/star-catcher/src/lib/tools/generateColors.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/api/design/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/api/design/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/app/design/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/app/design/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/GeneratorPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/Header.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/star-catcher/src/components/ui/TypographyPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/components/ui/TypographyPreview.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/lib/schemas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/lib/schemas/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/star-catcher/src/lib/tools/generateFontPairings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/star-catcher/src/lib/tools/generateFontPairings.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,26 +34,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Node.js.generateColors.ts.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "fonts",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/Users/angelina/Documents/projects/Star-Catcher",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "/Users/angelina/Documents/projects/Star-Catcher/star-catcher/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Node.js.generateColors.ts.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/angelina/Documents/projects/Star-Catcher&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/angelina/Documents/projects/Star-Catcher/star-catcher/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -73,6 +70,7 @@
       <updated>1758944471632</updated>
       <workItem from="1758944473097" duration="636000" />
       <workItem from="1758945113618" duration="15450000" />
+      <workItem from="1759039302237" duration="345000" />
     </task>
     <servers />
   </component>
@@ -81,5 +79,26 @@
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="84c884e9-526e-4fd7-b02c-59d8fcdbff4d" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="84c884e9-526e-4fd7-b02c-59d8fcdbff4d">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

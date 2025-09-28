@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { auth } from '../auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import UserPreferences from '@/models/UserPreferences';
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🔵 Preferences API Route: Received request');
     
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
       case 'get':
         console.log('🔵 Getting preferences...');
         
-        const user = await User.findOne({ email: session.user.email });
+        const user = await User.findOne({ email: (session as any).user.email });
         if (!user) {
           return NextResponse.json(
             { error: 'User not found' },

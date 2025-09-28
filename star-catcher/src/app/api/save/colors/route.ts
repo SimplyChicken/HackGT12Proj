@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
-import { auth } from '../../auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,7 +67,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'case_id is required' }, { status: 400 });
     }
 
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!(session as any)?.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }

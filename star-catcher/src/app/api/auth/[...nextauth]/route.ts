@@ -94,10 +94,5 @@ export const authOptions = {
   },
 };
 
-// ✅ Correct v5 handler exports
-export const {
-  handlers: { GET, POST },
-  auth,    // optional
-  signIn,  // optional
-  signOut, // optional
-} = NextAuth(authOptions);
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
