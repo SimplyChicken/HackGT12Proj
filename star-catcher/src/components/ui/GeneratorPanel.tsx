@@ -22,14 +22,11 @@ interface GeneratorPanelProps {
 
 export default function GeneratorPanel({
                                            className = '',
-                                           memories = [],
-                                           setMemories,
-                                           isMemoriesOpen = false,
-                                           setIsMemoriesOpen,
                                        }: GeneratorPanelProps) {
     const { data: session } = useSession();
 
-    const [activeTab, setActiveTab] = useState<TabType>('fonts');
+    // --- State (functionality from the first file) ---
+    const [activeTab] = useState<TabType>('fonts'); // kept for parity; UI doesn’t render tabs
     const [currentFont, setCurrentFont] = useState<FontPairing | null>(null);
     const [currentPalette, setCurrentPalette] = useState<ColorPalette | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +34,7 @@ export default function GeneratorPanel({
 
     const ALL_CATEGORIES: Category[] = ['serif', 'sans-serif', 'handwriting', 'display'];
 
-    // Locks
+    // Locks (fonts + colors)
     const [lockPrimaryFont, setLockPrimaryFont] = useState(false);
     const [lockSecondaryFont, setLockSecondaryFont] = useState(false);
     const [lockPrimaryColor, setLockPrimaryColor] = useState(false);
@@ -54,7 +51,7 @@ export default function GeneratorPanel({
 
     // --- Generator function (shared) ---
     const generateDesign = useCallback(
-        async (type: TabType, options: any = {}) => {
+        async (type: 'fonts' | 'colors', options: any = {}) => {
             setError(null);
             try {
                 const liked = memorySystem.getLikedItems();
@@ -170,7 +167,7 @@ export default function GeneratorPanel({
         if (!currentFont || !currentPalette) generateBoth();
     }, [generateBoth, currentFont, currentPalette]);
 
-    // Like/save current selection(s)
+    // Like/save current selection(s) — includes combo save from the first file
     const handleLike = useCallback(async () => {
         const userEmail = session?.user?.email;
         if (!userEmail) {
@@ -197,7 +194,7 @@ export default function GeneratorPanel({
             }
         }
 
-        // Save colors
+        // Save colors (with primary/secondary/accent values)
         if (currentPalette?.primary?.value && currentPalette?.secondary?.value && currentPalette?.accent?.value) {
             const colorData = {
                 email: userEmail,
@@ -224,14 +221,26 @@ export default function GeneratorPanel({
             }
         }
 
-        // Save combo
+        // Save combo (font + full color trio) — from first file
         if (currentFont && currentPalette?.primary && currentPalette?.secondary && currentPalette?.accent) {
             try {
                 const colorPair = {
                     case_id: Date.now().toString(),
-                    primary: { name: 'Primary', value: currentPalette.primary.value, contrast: currentPalette.primary.contrast ?? '#000000' },
-                    secondary: { name: 'Secondary', value: currentPalette.secondary.value, contrast: currentPalette.secondary.contrast ?? '#000000' },
-                    accent: { name: 'Accent', value: currentPalette.accent.value, contrast: currentPalette.accent.contrast ?? '#000000' },
+                    primary: {
+                        name: 'Primary',
+                        value: currentPalette.primary.value,
+                        contrast: currentPalette.primary.contrast ?? '#000000',
+                    },
+                    secondary: {
+                        name: 'Secondary',
+                        value: currentPalette.secondary.value,
+                        contrast: currentPalette.secondary.contrast ?? '#000000',
+                    },
+                    accent: {
+                        name: 'Accent',
+                        value: currentPalette.accent.value,
+                        contrast: currentPalette.accent.contrast ?? '#000000',
+                    },
                 };
                 const fontPair = {
                     case_id: (Date.now() + 1).toString(),
@@ -251,6 +260,7 @@ export default function GeneratorPanel({
         }
     }, [currentFont, currentPalette, session]);
 
+    // Derived display colors
     const colors = useMemo(
         () => ({
             primary: currentPalette?.primary?.value ?? '#111111',
@@ -260,23 +270,26 @@ export default function GeneratorPanel({
         [currentPalette]
     );
 
+    // --- Render (uses the second file’s look-and-feel) ---
     const renderContent = () => (
         <div className="space-y-6">
-            {/* Track Preferences Banner for Unauthenticated Users */}
+            {/* Track Preferences Banner (functionality from the first file, styled like the second) */}
             {!session && (
-                <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                <div className="mb-2 rounded-lg border border-bg bg-nav-surface p-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <UserPlus className="w-5 h-5" />
+                            <UserPlus className="w-5 h-5 text-ink" />
                             <div>
-                                <h4 className="text-sm font-semibold">Track Your Design Preferences</h4>
-                                <p className="text-xs">
+                                <h4 className="font-outfit text-sm md:text-base font-medium text-ink">
+                                    Track Your Design Preferences
+                                </h4>
+                                <p className="text-xs text-ink/80">
                                     Sign up to let the AI learn your style and create personalized designs.
                                 </p>
                             </div>
                         </div>
                         <Link href="/accounts">
-                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+                            <button className="px-4 py-2 rounded-md font-outfit text-sm bg-ink text-foreground hover:opacity-90 transition">
                                 Track Preferences
                             </button>
                         </Link>
@@ -284,114 +297,116 @@ export default function GeneratorPanel({
                 </div>
             )}
 
-            <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-                <h4 className="mb-3 text-base font-semibold text-gray-800 text-left">
-                    Press the spacebar to generate themes!
-                </h4>
+            <h4 className="font-outfit text-left text-sm md:text-base font-medium text-ink/80">
+                Press spacebar to generate themes!
+            </h4>
 
-                <div className="grid grid-cols-3 gap-3">
-                    {([
-                        { key: 'primary' as const, label: 'Primary', val: colors.primary, locked: lockPrimaryColor, toggle: () => setLockPrimaryColor((v) => !v) },
-                        { key: 'secondary' as const, label: 'Secondary', val: colors.secondary, locked: lockSecondaryColor, toggle: () => setLockSecondaryColor((v) => !v) },
-                        { key: 'accent' as const, label: 'Accent', val: colors.accent, locked: lockAccentColor, toggle: () => setLockAccentColor((v) => !v) },
-                    ]).map(({ key, label, val, locked, toggle }) => (
-                        <div key={key} className="bg-white rounded-md border border-gray-200 overflow-hidden font-ui text-ink">
-                            <div style={{ background: val, height: 48 }} />
-                            <div className="p-2 text-sm flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-medium">{label}</span>
-                                    <button
-                                        type="button"
-                                        aria-pressed={locked}
-                                        onClick={toggle}
-                                        className="inline-flex items-center gap-2 px-3 py-1.5 text-sm"
-                                        title={locked ? 'Unlock' : 'Lock'}
-                                    >
-                                        {locked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
-                                    </button>
-                                </div>
-                                <code className="text-gray-600">{val}</code>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <TypographyPreview fontPairing={currentFont} palette={currentPalette} />
-
-                {/* Font category controls */}
-                <div className="rounded-2xl border bg-white p-6 shadow-sm mt-6">
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                        {/* Primary font */}
-                        <div>
-                            <div className="mb-3 flex items-center gap-1">
-                                <span className="text-sm font-medium leading-none">Primary Font</span>
+            {/* Color cards with locks (styled like the second file) */}
+            <div className="grid grid-cols-3 gap-3">
+                {([
+                    { key: 'primary' as const, label: 'Primary', val: colors.primary, locked: lockPrimaryColor, toggle: () => setLockPrimaryColor((v) => !v) },
+                    { key: 'secondary' as const, label: 'Secondary', val: colors.secondary, locked: lockSecondaryColor, toggle: () => setLockSecondaryColor((v) => !v) },
+                    { key: 'accent' as const, label: 'Accent', val: colors.accent, locked: lockAccentColor, toggle: () => setLockAccentColor((v) => !v) },
+                ]).map(({ key, label, val, locked, toggle }) => (
+                    <div key={key} className="bg-white rounded-md border border-gray-200 overflow-hidden font-ui text-ink">
+                        <div style={{ background: val, height: 48 }} />
+                        <div className="p-2 text-sm flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium">{label}</span>
                                 <button
                                     type="button"
-                                    onClick={() => setLockPrimaryFont((v) => !v)}
-                                    aria-pressed={lockPrimaryFont}
-                                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm"
+                                    aria-pressed={locked}
+                                    onClick={toggle}
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-ink"
+                                    title={locked ? 'Unlock' : 'Lock'}
                                 >
-                                    {lockPrimaryFont ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                                    {locked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
                                 </button>
                             </div>
+                            <code className="text-gray-600">{val}</code>
+                        </div>
+                    </div>
+                ))}
+            </div>
 
-                            <div className="flex flex-wrap gap-3">
-                                {ALL_CATEGORIES.map((cat) => (
-                                    <label
-                                        key={`prim-${cat}`}
-                                        className="inline-flex items-center gap-2 rounded-full bg-gray-50 px-3 py-1.5 text-sm capitalize border"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            className="h-4 w-4 rounded-sm"
-                                            checked={primaryCategories.includes(cat)}
-                                            onChange={() => setPrimaryCategories((c) => toggleIn(c, cat))}
-                                            disabled={lockPrimaryFont}
-                                        />
-                                        <span>{cat.replace('-', ' ')}</span>
-                                    </label>
-                                ))}
-                            </div>
+            <TypographyPreview fontPairing={currentFont} palette={currentPalette} />
+
+            {/* Controls card (second file styling) */}
+            <div className="rounded-2xl border border-bg bg-nav-surface p-6 shadow-sm">
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    {/* Primary Font */}
+                    <div>
+                        <div className="mb-3 flex items-center gap-1">
+              <span className="font-outfit text-sm font-medium leading-none text-ink/90">
+                Primary Font
+              </span>
+                            <button
+                                type="button"
+                                onClick={() => setLockPrimaryFont((v) => !v)}
+                                aria-pressed={lockPrimaryFont}
+                                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-ink"
+                            >
+                                {lockPrimaryFont ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                            </button>
                         </div>
 
-                        {/* Secondary font */}
-                        <div>
-                            <div className="mb-3 flex items-center gap-1">
-                                <span className="text-sm font-medium leading-none">Secondary Font</span>
-                                <button
-                                    type="button"
-                                    onClick={() => setLockSecondaryFont((v) => !v)}
-                                    aria-pressed={lockSecondaryFont}
-                                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm"
+                        <div className="flex flex-wrap gap-3">
+                            {ALL_CATEGORIES.map((cat) => (
+                                <label
+                                    key={`prim-${cat}`}
+                                    className="inline-flex items-center gap-2 rounded-full bg-page/60 px-3 py-1.5 font-outfit text-sm capitalize text-ink/80 border border-bg"
                                 >
-                                    {lockSecondaryFont ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-                                </button>
-                            </div>
+                                    <input
+                                        type="checkbox"
+                                        className="h-4 w-4 rounded-sm checkbox-ink focus:ring-2 focus:ring-[color:var(--ink)]/30"
+                                        checked={primaryCategories.includes(cat)}
+                                        onChange={() => setPrimaryCategories((c) => toggleIn(c, cat))}
+                                        disabled={lockPrimaryFont}
+                                    />
+                                    <span>{cat.replace('-', ' ')}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
 
-                            <div className="flex flex-wrap gap-3">
-                                {ALL_CATEGORIES.map((cat) => (
-                                    <label
-                                        key={`sec-${cat}`}
-                                        className="inline-flex items-center gap-2 rounded-full bg-gray-50 px-3 py-1.5 text-sm capitalize border"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            className="h-4 w-4 rounded-sm"
-                                            checked={secondaryCategories.includes(cat)}
-                                            onChange={() => setSecondaryCategories((c) => toggleIn(c, cat))}
-                                            disabled={lockSecondaryFont}
-                                        />
-                                        <span>{cat.replace('-', ' ')}</span>
-                                    </label>
-                                ))}
-                            </div>
+                    {/* Secondary Font */}
+                    <div>
+                        <div className="mb-3 flex items-center gap-1">
+              <span className="font-outfit text-sm font-medium leading-none text-ink/90">
+                Secondary Font
+              </span>
+                            <button
+                                type="button"
+                                onClick={() => setLockSecondaryFont((v) => !v)}
+                                aria-pressed={lockSecondaryFont}
+                                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-ink"
+                            >
+                                {lockSecondaryFont ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                            </button>
+                        </div>
+
+                        <div className="flex flex-wrap gap-3">
+                            {ALL_CATEGORIES.map((cat) => (
+                                <label
+                                    key={`sec-${cat}`}
+                                    className="inline-flex items-center gap-2 rounded-full bg-page/60 px-3 py-1.5 font-outfit text-sm capitalize text-ink/80 border border-bg"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        className="h-4 w-4 rounded-sm checkbox-ink focus:ring-2 focus:ring-[color:var(--ink)]/30"
+                                        checked={secondaryCategories.includes(cat)}
+                                        onChange={() => setSecondaryCategories((c) => toggleIn(c, cat))}
+                                        disabled={lockSecondaryFont}
+                                    />
+                                    <span>{cat.replace('-', ' ')}</span>
+                                </label>
+                            ))}
                         </div>
                     </div>
                 </div>
-
-                <TypographyPreview fontPairing={currentFont} palette={currentPalette} />
-                {(currentFont || currentPalette) && <LikeBar onLike={handleLike} />}
             </div>
+
+            {(currentFont || currentPalette) && <LikeBar onLike={handleLike} />}
         </div>
     );
 
